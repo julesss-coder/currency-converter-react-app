@@ -2,6 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
 
+/* Fontawesome */
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+
 // pages
 import CurrencyConverter from './CurrencyConverter';
 import ExchangeRatesTable from './ExchangeRatesTable';
@@ -10,36 +14,38 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     
-    this.toggleNavbar = this.toggleNavbar.bind(this);
+    // this.toggleNavbar = this.toggleNavbar.bind(this);
   }
   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
-  toggleNavbar(e) {
-    // console.log('e.target: ', e.target);
-    // console.log('e: ', e);
-    // There must be a simpler way of handling this, with event bubbling/propagation?
-    let navbarDropdown = document.getElementsByClassName('navbar-collapse')[0];
-    // If dropdown menu is hidden:
-    if (navbarDropdown.classList.contains('collapse')) {
-      if (e.target.className === 'navbar-toggler' || e.target.className === 'navbar-toggler-icon') {
-        console.log('navbar toggler/icon clicked');
-        // Show dropdown menu
-        document.getElementsByClassName('navbar-collapse')[0].classList.remove('collapse');
-      }
-    }
-    // else if dropdown menu is visible
-    else {
-      // if user clicks somewhere on dropdown menu, or navbar toggler
-      if (e.target.classList.contains('nav-link')
-      || e.target.classList.contains('navbar-toggler')
-      || e.target.classList.contains('navbar-toggler-icon')
-      ) {
-        // Hide drop down menu
-        document.getElementsByClassName('navbar-collapse')[0].classList.add('collapse');
-      }
-    }
+  /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js 
+  Source: URL: https://getbootstrap.com/docs/5.0/components/dropdowns/ */
+  // toggleNavbar(e) {
+  //   // console.log('e.target: ', e.target);
+  //   // console.log('e: ', e);
+  //   // There must be a simpler way of handling this, with event bubbling/propagation?
+  //   let navbarDropdown = document.getElementsByClassName('navbar-collapse')[0];
+  //   // If dropdown menu is hidden:
+  //   if (navbarDropdown.classList.contains('collapse')) {
+  //     if (e.target.className === 'navbar-toggler' || e.target.className === 'navbar-toggler-icon') {
+  //       console.log('navbar toggler/icon clicked');
+  //       // Show dropdown menu
+  //       document.getElementsByClassName('navbar-collapse')[0].classList.remove('collapse');
+  //     }
+  //   }
+  //   // else if dropdown menu is visible
+  //   else {
+  //     // if user clicks somewhere on dropdown menu, or navbar toggler
+  //     if (e.target.classList.contains('nav-link')
+  //     || e.target.classList.contains('navbar-toggler')
+  //     || e.target.classList.contains('navbar-toggler-icon')
+  //     ) {
+  //       // Hide drop down menu
+  //       document.getElementsByClassName('navbar-collapse')[0].classList.add('collapse');
+  //     }
+  //   }
     
-  }
+  // }
 
   render() {
     return (
@@ -53,40 +59,29 @@ class App extends React.Component {
           <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
               <a className="navbar-brand" href="#">Convert Me</a>
-              <button onClick={(e) => {this.toggleNavbar(e)}} className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
               </button>
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   <li className="nav-item">
-                    <Link to="/" onClick={(e) => {this.toggleNavbar(e)}} className="nav-link active" aria-current="page" href="#">Currency Converter</Link>
+                    <Link to="/" className="nav-link active" aria-current="page" href="#">Currency Converter</Link>
                     {/* <a className="nav-link active" aria-current="page" href="#">Currency Converter</a> */}
                   </li>
                   <li className="nav-item">
-                    <Link to="/exchange-rates-table" onClick={(e) => {this.toggleNavbar(e)}} className="nav-link" href="#">Exchange Rates Table</Link>
+                    <Link to="/exchange-rates-table" className="nav-link" href="#">Exchange Rates Table</Link>
                     {/* <a className="nav-link" href="#">Exchange Rates Table</a> */}
                   </li>
                 </ul>
               </div>
             </div>
           </nav>
-
-
-          <nav>
-            <ul>
-              <li>
-                <Link to="/">Currency Converter</Link>
-              </li>
-              <li>
-                <Link to="/exchange-rates-table">Exchange Rates Table</Link>
-              </li>
-            </ul>
-          </nav>
           <Routes>
             <Route path="/" exact element={<CurrencyConverter />} />
             <Route path="/exchange-rates-table" element={<ExchangeRatesTable />} />
           </Routes>
 
+        
           {/* Footer */}
 
         </div>
