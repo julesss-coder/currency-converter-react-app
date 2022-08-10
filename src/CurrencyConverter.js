@@ -3,12 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const CurrencyConverter = () => {
   return (
-    <div className="row">
+    <div className="row mt-3">
+      <h2 className="mb-3">Currency Converter</h2>
       <div className="col-12 col-lg-6">
+        {/* Add currently picked currency to headline, like so: US Dollar Currency Converter */}
         {/* Currency input/dropdown 1 */}
         <div className="input-group mb-3">
           {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
-          <input type="text" className="form-control" aria-label="Text input with dropdown button">
+          <input type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
             </input>
           <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
           <ul className="dropdown-menu dropdown-menu-end">
@@ -27,7 +29,7 @@ const CurrencyConverter = () => {
       <div className="col-12 col-lg-6">
         {/* Currency input/dropdown 2 */}
         <div className="input-group mb-3">
-          <input type="text" className="form-control" aria-label="Text input with dropdown button" />
+          <input type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
           <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
           <ul className="dropdown-menu dropdown-menu-end">
             <li><a className="dropdown-item" href="#">Action</a></li>
