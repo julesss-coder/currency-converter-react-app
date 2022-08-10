@@ -83,7 +83,14 @@ class App extends React.Component {
 
         
           {/* Footer */}
-
+          <footer className="bg-light mt-5 lh-lg text-muted">
+            <li>By julesss-coder</li>
+            <li>Find me on <a href="https://github.com/julesss-coder">GitHub</
+            a></li>
+            <li>
+              <a href="https://julesss-coder.github.io/personal-portfolio/">Personal portfolio</a>
+            </li>
+          </footer>
         </div>
       </Router>
     );
