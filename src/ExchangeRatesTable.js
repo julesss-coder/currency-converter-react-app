@@ -1,4 +1,9 @@
-const ExchangeRatesTable = () => {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+function ExchangeRatesTable(props) {
+  console.log('props in currency converter: ', props);
+  let { amount, base, rates } = props.baseCurrency;
+  
   return (
     <div className="row mt-3">
       <div className="col-12 col-lg-5">
@@ -13,7 +18,9 @@ const ExchangeRatesTable = () => {
           {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
           <input type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
             </input>
-          <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+          <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <FontAwesomeIcon icon="fa-solid fa-caret-down" />
+          </button>
           <ul className="dropdown-menu dropdown-menu-end">
             <li><a className="dropdown-item" href="#">Action</a></li>
             <li><a className="dropdown-item" href="#">Another action</a></li>

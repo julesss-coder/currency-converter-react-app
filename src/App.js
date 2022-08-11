@@ -14,8 +14,37 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     
+    this.state = {
+      allCurrencies: [],
+    }
     // this.toggleNavbar = this.toggleNavbar.bind(this);
   }
+
+
+  // componentDidMount() {
+  //   let allCurrencies;
+  //   console.log('props in componentDidMount in App.js: ', this.props);
+
+  //   fetch('https://altexchangerateapi.herokuapp.com/currencies')
+  //   .then(response => {
+  //     if (response.ok) {
+  //       return response.json();
+  //     }
+  //     throw new Error('Request was either a 404 or 500');
+  //   }).then(data => {
+  //     // console.log('json data: ', data);
+  //     allCurrencies = data;
+  //     console.log('allCurrencies:', allCurrencies);
+  //   }).catch(error => {
+  //     console.log(error);
+  //     // deal with error
+  //   });
+
+  //   this.setState({allCurrencies: allCurrencies});
+  //   // this.setState((state, props) => ({
+  //   //   allCurrencies: state.allCurrencies + 
+  //   // }));
+  // }
   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
   /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js 
@@ -48,6 +77,29 @@ class App extends React.Component {
   // }
 
   render() {
+    console.log('state in App.js render(): ', this.state);
+    let baseCurrency = 
+    {
+      "amount":1.0,
+      "base":"EUR",
+      "date":"2021-04-16",
+      "rates":{
+        "AUD":1.6141,
+        "BGN":1.9558,
+        "BRL":4.5666,
+        "CAD":1.5,
+        "CHF":1.1263,
+        "CNY":7.7228,
+        "CZK":25.766,
+        "DKK":7.4681,
+        "GBP":0.8762,
+        "HKD":8.7656,
+        //... more currencies
+      }
+    };
+
+    
+
     return (
       <Router>
         {/* Bootstrap 5 container */}
@@ -77,8 +129,8 @@ class App extends React.Component {
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={<CurrencyConverter />} />
-            <Route path="/exchange-rates-table" element={<ExchangeRatesTable />} />
+            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} />} />
+            <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} />} />
           </Routes>
 
         
