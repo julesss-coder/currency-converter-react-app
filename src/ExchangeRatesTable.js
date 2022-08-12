@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 function ExchangeRatesTable(props) {
   console.log('props in currency converter: ', props);
   let { amount, base, rates } = props.baseCurrency;
+  let { allCurrencies, dropdownItemArray } = props;
   
   return (
     <div className="row mt-3">
@@ -21,7 +22,12 @@ function ExchangeRatesTable(props) {
           <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             <FontAwesomeIcon icon="fa-solid fa-caret-down" />
           </button>
-          <ul className="dropdown-menu dropdown-menu-end">
+          <ul className="dropdown-menu dropdown-menu-end currency-dropdown">
+            {
+              dropdownItemArray.map(item => {
+                return <li><a href="">{item[0]} {item[1]}</a></li>;
+              })
+            }
             <li><a className="dropdown-item" href="#">Action</a></li>
             <li><a className="dropdown-item" href="#">Another action</a></li>
             <li><a className="dropdown-item" href="#">Something else here</a></li>

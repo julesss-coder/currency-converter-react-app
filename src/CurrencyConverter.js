@@ -5,42 +5,51 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      allCurrencies: [],
-    }
+    // this.state = {
+    //   allCurrencies: [],
+    // }
   }
   
-  componentDidMount() {
-    let allCurrencies;
-
-    fetch('https://altexchangerateapi.herokuapp.com/currencies')
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      // console.log('json data: ', data);
-      allCurrencies = data;
-      console.log('allCurrencies:', allCurrencies);
-    }).catch(error => {
-      console.log(error);
-      // deal with error
-    });
-
-    this.setState({allCurrencies: allCurrencies});
-  }
-
   render() {
     let { amount, base, rates } = this.props.baseCurrency;
+    let { allCurrencies, dropdownItemArray } = this.props;
+    console.log('allCurrencies in CurrencyConverter render(): ', allCurrencies);
     
-    console.log('allCurrencies in Currency Converter: ', this.state.allCurrencies); // still undefined
+    // Append list of all currencies to all ul.currency-dropdown
+    // ***Is there a way to do this dynamically within the return statement?***
+    // IDEA: Create the ul element, add li elements, add in the whole ul element dynamically
+    // IDEA: Make a list of li elements (without them being children of a ul)
+
+    // SOLUTION 1: WORKS!
+    // let currencyDropdown = Array.from(document.getElementsByClassName('currency-dropdown'));
+    // currencyDropdown.forEach(dropdown => {
+    //   for (let key in allCurrencies) {
+    //     let currencyItem = document.createElement('li');
+    //     currencyItem.innerHTML = `<li><a className="dropdown-item" href="#">${[key]} ${allCurrencies[key]}</a></li>`;
+    //     dropdown.appendChild(currencyItem);
+    //   }
+    // });
+
+    // SOLUTION 2: DOES NOT WORK
+    // create the ul dropdown, add it in whereever the same dropdown is needed
+    // let currencyDropdown = document.createElement('ul');
+    // currencyDropdown.classList.add('dropdown-menu', 'dropdown-menu-end', 'currency-dropdown');
     
-    /* 
-    For each currency pair in allCurrencies:
-      Render key and value inside dropdown
-    */
-  
+    // for (let key in allCurrencies) {
+    //   let dropdownItem = document.createElement('li');
+    //   dropdownItem.textContent = `<li>${key} ${allCurrencies[key]}</li>`;
+    //   currencyDropdown.appendChild(dropdownItem);
+    // }
+    // console.dir(currencyDropdown);
+
+    // SOLUTION 3: Turn allCurrencies into an array, dropdownItemArray
+    // map and render it inside return statement
+    // *** REDUNDANT, as it is rendered in three different places (as there are three identical dropdown menus)***
+    // *** SOLUTION 1 might be more suitable, as it is does not do redundant work. Have to put it into App.js and pass it down to CurrencyConverter and ExchnageRatesTable as props.***
+    // let dropdownItemArray = [];
+    // for (let key in allCurrencies) {
+    //   dropdownItemArray.push([key, allCurrencies[key]]);
+    // }
   
     return (
       <div className="row mt-3">
@@ -55,15 +64,12 @@ class CurrencyConverter extends React.Component {
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-              {/* {
-                allCurrencies should be injected here
-              } */}
-              <li><a className="dropdown-item" href="#">Action</a></li>
-              <li><a className="dropdown-item" href="#">Another action</a></li>
-              <li><a className="dropdown-item" href="#">Something else here</a></li>
-              <li><hr className="dropdown-divider" /></li>
-              <li><a className="dropdown-item" href="#">Separated link</a></li>
+            <ul className="dropdown-menu dropdown-menu-end currency-dropdown">
+              {
+                dropdownItemArray.map(item => {
+                  return <li><a href="">{item[0]} {item[1]}</a></li>;
+                })
+              }
             </ul>
           </div>
           {/* Amount input 1 */}
@@ -78,12 +84,12 @@ class CurrencyConverter extends React.Component {
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
-            <ul className="dropdown-menu dropdown-menu-end">
-              <li><a className="dropdown-item" href="#">Action</a></li>
-              <li><a className="dropdown-item" href="#">Another action</a></li>
-              <li><a className="dropdown-item" href="#">Something else here</a></li>
-              <li><hr className="dropdown-divider" /></li>
-              <li><a className="dropdown-item" href="#">Separated link</a></li>
+            <ul className="dropdown-menu dropdown-menu-end currency-dropdown">
+              {
+                dropdownItemArray.map(item => {
+                  return <li><a href="">{item[0]} {item[1]}</a></li>;
+                })
+              }
             </ul>
           </div>
           {/* Amount input 2 */}

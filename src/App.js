@@ -21,30 +21,28 @@ class App extends React.Component {
   }
 
 
-  // componentDidMount() {
-  //   let allCurrencies;
-  //   console.log('props in componentDidMount in App.js: ', this.props);
+  componentDidMount() {
+    // Get list of all available currencies and add them to state
+    let allCurrencies;
+    console.log('props in componentDidMount in App.js: ', this.props);
 
-  //   fetch('https://altexchangerateapi.herokuapp.com/currencies')
-  //   .then(response => {
-  //     if (response.ok) {
-  //       return response.json();
-  //     }
-  //     throw new Error('Request was either a 404 or 500');
-  //   }).then(data => {
-  //     // console.log('json data: ', data);
-  //     allCurrencies = data;
-  //     console.log('allCurrencies:', allCurrencies);
-  //   }).catch(error => {
-  //     console.log(error);
-  //     // deal with error
-  //   });
+    fetch('https://altexchangerateapi.herokuapp.com/currencies')
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      // console.log('json data: ', data);
+      allCurrencies = data;
+      console.log('allCurrencies:', allCurrencies);
+      this.setState({allCurrencies: allCurrencies});
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
 
-  //   this.setState({allCurrencies: allCurrencies});
-  //   // this.setState((state, props) => ({
-  //   //   allCurrencies: state.allCurrencies + 
-  //   // }));
-  // }
+  }
   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
   /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js 
@@ -78,6 +76,17 @@ class App extends React.Component {
 
   render() {
     console.log('state in App.js render(): ', this.state);
+    let { allCurrencies } = this.state;
+
+    // Create an array of dropdown items (one item per currency)
+    let dropdownItemArray = [];
+    for (let key in allCurrencies) {
+      dropdownItemArray.push([key, allCurrencies[key]]);
+    }
+    // Pass dropdownItemArray to child components are props and render dropdown item there
+
+
+
     let baseCurrency = 
     {
       "amount":1.0,
@@ -98,6 +107,22 @@ class App extends React.Component {
       }
     };
 
+    // SOLUTION 1: WORKS!
+    // Kann ich auf die Elemente mit Klasse currency-dropdown überhaupt schon zugreifen zu diesem Zeitpunkt?
+    // Annahme: Nein, denn die Komponenten CurrencyConverter und ExchangeRatesTable wurde noch nicht geladen.
+    // Soll ich das ganze in ComponentDidMount in den beiden Komponenten gegeben geben?
+    // Wenn parent component gemountet ist, heißt das, dass auch alle child components gemountet sind?
+    // let currencyDropdown = Array.from(document.getElementsByClassName('currency-dropdown'));
+    // // Antwort: Nur nach einem Re-Render der Seite loggt die folgende Zeile die jeweiligen Dropdowns, d.h. 2, wenn ich CurrencyConverter Seite lade, 1 wenn ich ExchangeRateTables lade.
+    // console.log('currencyDropdown: ', currencyDropdown);
+    // let { allCurrencies } = this.state;
+    // currencyDropdown.forEach(dropdown => {
+    //   for (let key in allCurrencies) {
+    //     let currencyItem = document.createElement('li');
+    //     currencyItem.innerHTML = `<li><a className="dropdown-item" href="#">${[key]} ${allCurrencies[key]}</a></li>`;
+    //     dropdown.appendChild(currencyItem);
+    //   }
+    // });
     
 
     return (
@@ -129,8 +154,8 @@ class App extends React.Component {
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} />} />
-            <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} />} />
+            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
+            <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
           </Routes>
 
         
