@@ -15,7 +15,8 @@ class CurrencyConverter extends React.Component {
     console.log('*****render() in CurrencyConverter runs******');
     let { amount, base, date, rates } = this.props.baseCurrency;
     console.log('amount, base, date, rates: ', amount, base, date, rates);
-    let { allCurrencies, dropdownItemArray, onCurrencyChange } = this.props;
+    let { allCurrencies, dropdownItemArray, onCurrencyChange, onAmountChange, currentPair } = this.props;
+    let { baseOfPair, amountBaseOfPair, pairedCurrency } = currentPair;
     console.log('this.props in render(): ', this.props);
     // let { USD } = rates;
 
@@ -65,13 +66,13 @@ class CurrencyConverter extends React.Component {
           {/* Currency input/dropdown 1 */}
           <div className="input-group mb-3">
             {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
-            <input value={base} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
+            <input value={baseOfPair} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
               </input>
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
             {/* Ich kann onCurrencyChange loggen, aber nicht aufrufen. Wieso nicht? */}
-            <ul onClick={(e) => onCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown">
+            <ul onClick={(e) => onCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
                 dropdownItemArray.map(item => {
                   return <li><a href="">{item[0]} {item[1]}</a></li>;
@@ -81,17 +82,17 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 1 */}
           <div className="input-group mb-3">
-            <input value={amount} type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={amountBaseOfPair} onChange={ onAmountChange } type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
         </div>
         <div className="col-12 col-lg-6">
           {/* Currency input/dropdown 2 */}
           <div className="input-group mb-3">
-            <input value={allCurrencies.USD ? allCurrencies.USD : 'still undefined'} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
+            <input value={pairedCurrency} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
-            <ul className="dropdown-menu dropdown-menu-end currency-dropdown">
+            <ul onClick={(e) => onCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
                 dropdownItemArray.map(item => {
                   return <li><a href="">{item[0]} {item[1]}</a></li>;
@@ -101,7 +102,7 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 2 */}
           <div className="input-group mb-3">
-            <input value={rates ? rates.USD : 'still undefined'} type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={rates ? rates[pairedCurrency] * amountBaseOfPair : 'still undefined'} type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           <button type="button" className="btn btn-outline-primary">

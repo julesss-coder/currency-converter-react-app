@@ -76,8 +76,11 @@ CurrencyConverter component:
   - value={rates ? rates.USD : 'still undefined'}
   This works, but is this really the best solution? Assumption: There is something I don't understand about async requests and the order in which React renders its components.
 5. Currency input 1: I want to add an event handler to every currency on the list. I render the list dynamically in the render() method. I can console.log the handler method `onCurrencyChange`, but it does not run when I click one of the currencies.
-  POSSIBLE ALTERNATIVE: Add a click handler to  dropDownItemArray` in App.js, and let the clicks bubble up to parent component.
+  POSSIBLE ALTERNATIVE: Add a click handler to  ul element, and let the clicks bubble up to parent component.
 
+- Q: How to setState for only one (sub)property of this.state, without copying all the parts of state that stay the same?
+- A: URL: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
+- Is the calculation of exchange rates correct when user changes currency in lower input field?
 
 ### PROCESS
 See "Thinking in React"
@@ -115,22 +118,25 @@ Value of second input field: Exchange rate of EUR to USD for 1 EUR
 
 // Change currency - must work with both currency/amount input fields
 If user clicks drowdown arrow on currency menu:
-  Show all available currencies
+  Show all available currencies ***OK***
   If user clicks currency:
     Display currency (flag, abbreviation, full name) in input field
-    Change base currency in state:
+    Change base currency in state: ***OK***
       // onCurrencyChange: run handleCurrencyChange()
       Fetch exchange rates for this currency 
       Update state with new base currency and its amount and rates
-      Pass state down to CurrencyConverter
+      Pass state down to CurrencyConverter ***OK***
     // Default value of amount input field is 1
-    Calculate exchange rate of base currency to exchange currency based on current amount under input field
+    Calculate exchange rate of base currency to exchange currency based on current amount under input field ***NEXT TDDO***
     Display exchange rate in opposite input field
-
-    If user changes currency amount:
+******************************************************************************************************************************
+    If user changes currency amount: ==========***TODO: ADD ONCHANGE HANDLER TO SECOND AMOUNT INPUT FIELD***============
+******************************************************************************************************************************
       Get exchange rate from state
       Calculate exchange rate based on current amount under input field
       Display exchange rate in opposite input field // No need to change state when amount is changed. State contains the info we need to calculate any amount
+      CHECK IF CALCULATIONS ARE ACTUALLY CORRECT!
+      USE LIBRARY MONEY.JS
 
 If user clicks switch:
   // Switch currency pair

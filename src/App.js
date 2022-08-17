@@ -17,9 +17,15 @@ class App extends React.Component {
     this.state = {
       allCurrencies: [],
       baseCurrency: {},
+      currentPair: {
+        baseOfPair: 'EUR',
+        amountBaseOfPair: 1,
+        pairedCurrency: 'USD',
+      }
     }
     // this.toggleNavbar = this.toggleNavbar.bind(this);
     this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
   }
 
 
@@ -64,31 +70,112 @@ class App extends React.Component {
     });
   }
 
+  // When I change the second currency, currentPair is not updated.
+  // When I change the first currency: Only the keys included in this.setState below are still in state, the rest are missing. 
+  // But state updates are supposed to merge? According to: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
   handleCurrencyChange(e) {
     // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
     e.preventDefault();
-    // console.log('handleCurrencyChange() runs');
+    
     // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
-    // get data for new base currency
 
-    fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      console.log('data in fetch request for EUR rates: ', data);
-      // work with data
-      this.setState({
-        baseCurrency: data,
+    // If user changes currency in top input field:
+    // if e.target has classname currency-picker1:
+    if (e.target.closest('ul').classList.contains('currency-picker-1')) {
+      // get data for new base currency
+      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+  
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        console.log('data in fetch request for EUR rates: ', data);
+        // work with data
+        // let baseOfPair = newCurrency;
+        // this.setState({
+        //   baseCurrency: data,
+        //   currentPair: {
+        //     baseOfPair: newCurrency,
+        //   }
+        // });
+        // Using a callback function and rest operator to partially update state
+        this.setState(() => ({
+          baseCurrency: data,
+          currentPair: {
+            ...this.state.currentPair,
+            baseOfPair: newCurrency,
+          }
+        }));
+      }).catch(error => {
+        console.log(error);
+        // deal with error
       });
-    }).catch(error => {
-      console.log(error);
-      // deal with error
+      
+    } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
+      // change baseCurrency
+      // change currentPair: baseOfPair to new currency
+    // Else if user changes currency in bottom input field:
+    // if e.target has classname currency-picker2:
+      // change currentPair: pairedCurrency to new currency
+      // get data for new base currency
+      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+  
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        console.log('data in fetch request for EUR rates: ', data);
+        // work with data
+        // let pairedCurrency = newCurrency;
+        console.log('newCurrency: ', newCurrency);
+        // this.setState({
+        //   currentPair: {
+        //     pairedCurrency: newCurrency,
+        //   }
+        // });
+        this.setState(() => ({
+          currentPair: {
+            ...this.state.currentPair,
+            pairedCurrency: newCurrency,
+          }
+        }));
+      }).catch(error => {
+        console.log(error);
+        // deal with error
+      });
+    }
+  }
+
+  handleAmountChange(e) {
+    console.log('handleAmountChange runs');
+    // e.preventDefault(); ??
+    console.log(e.target.value);
+
+    // On page load / On amount change // What happens when both change?
+    // Get current base currency
+    // Get current paired currency
+    let { baseOfPair, pairedCurrency } = this.state.currentPair;
+    // Get (new) amount
+    let newAmount = +e.target.value; // Handle '' input
+    // Calculate exchange rate * amount
+    let newValue = this.state.baseCurrency.rates[pairedCurrency] * newAmount;
+    this.setState({
+      currentPair: {
+        baseOfPair: baseOfPair,
+        amountBaseOfPair: newAmount,
+        pairedCurrency: pairedCurrency,
+      }
     });
+    // Render amount in input field // Do not change state
+
+
+
+
   }
   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
@@ -122,16 +209,16 @@ class App extends React.Component {
   // }
 
   render() {
-    console.log('state in App.js render(): ', this.state);
     let { allCurrencies, baseCurrency } = this.state;
-
+    
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
     for (let key in allCurrencies) {
       dropdownItemArray.push([key, allCurrencies[key]]);
     }
     // Pass dropdownItemArray to child components are props and render dropdown item there
-
+    
+    console.log('state in App.js render(): ', this.state);
 
     // let baseCurrency = 
     // {
@@ -200,7 +287,7 @@ class App extends React.Component {
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} onCurrencyChange={ this.handleCurrencyChange } />} />
+            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} onCurrencyChange={ this.handleCurrencyChange } onAmountChange={ this.handleAmountChange } currentPair={this.state.currentPair} />} />
             <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
           </Routes>
 
