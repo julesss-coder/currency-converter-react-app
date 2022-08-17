@@ -63,23 +63,32 @@ Component hierarchy:
 - When I fetch all currencies in App.js and pass them as props to CurrencyConverter, `allCurrencies` is a pending Promise and not the actual list of currencies. Assumption: Render of component is faster than API request???
 --> Try fetching all currencies inside CurrencyConverter
 
+CurrencyConverter component:
+1. First line in render: console.log('*****render() in CurrencyConverter runs******');
+   When I reload the page, this message is logged several times. Why does render() run so often?
+2. Do I even need componentDidMount()? No.
+3. Do I even need componentDidUpdate()? No.
+4. When I enter `value={rates.USD}` in the second currency drop down (so that it shows USD by default), this sometimes works, at other times, an error occurs. 
+  Assumption: Fetch request for `rates` is not always completed on time.
+  BUT: Then why can I always render `amount` and `base`, which are passed in as part of the results of the same fetch request?
+  CURRENT SOLUTION: Render `rates` and `allCurrencies.USD` conditionally, like so: 
+  - value={allCurrencies.USD ? allCurrencies.USD : 'still undefined'}
+  - value={rates ? rates.USD : 'still undefined'}
+  This works, but is this really the best solution? Assumption: There is something I don't understand about async requests and the order in which React renders its components.
+5. Currency input 1: I want to add an event handler to every currency on the list. I render the list dynamically in the render() method. I can console.log the handler method `onCurrencyChange`, but it does not run when I click one of the currencies.
+  POSSIBLE ALTERNATIVE: Add a click handler to  dropDownItemArray` in App.js, and let the clicks bubble up to parent component.
+
 
 ### PROCESS
 See "Thinking in React"
 - Build a static version first
 
 
-### LOGIC
-
 #### NECESSARY INFORMATION
 
 Information we need to get from API:
-  - Dropdown menus: All available currencies****TODO NOW***
-  - Exchange Rates Table: 
-    Base currency: EUR, 
-    Amount: 1,
-    Rates for all currencies
-  - Currency Converter: Current currency pair and amounts:
+  - Dropdown menus: All available currencies ***OK***
+  - Currency Converter: Current currency pair and amounts:***OK***
     base: EUR,
     amount: 1, 
     exchangeTo: USD,
@@ -90,6 +99,10 @@ Information we need to get from API:
     // With default base EUR
     // On user interaction: change state to new base and amount. Fetch rates. 
     //****************************************************
+  - Exchange Rates Table:
+    Base currency: EUR, 
+    Amount: 1,
+    Rates for all currencies
 
 
 #### LOGIC OF PAGE CURRENCY CONVERTER
@@ -103,15 +116,21 @@ Value of second input field: Exchange rate of EUR to USD for 1 EUR
 // Change currency - must work with both currency/amount input fields
 If user clicks drowdown arrow on currency menu:
   Show all available currencies
-  If user picks currency:
+  If user clicks currency:
     Display currency (flag, abbreviation, full name) in input field
+    Change base currency in state:
+      // onCurrencyChange: run handleCurrencyChange()
+      Fetch exchange rates for this currency 
+      Update state with new base currency and its amount and rates
+      Pass state down to CurrencyConverter
     // Default value of amount input field is 1
-    Calculate exchange rate based on current amount under input field
+    Calculate exchange rate of base currency to exchange currency based on current amount under input field
     Display exchange rate in opposite input field
 
     If user changes currency amount:
+      Get exchange rate from state
       Calculate exchange rate based on current amount under input field
-      Display exchange rate in opposite input field
+      Display exchange rate in opposite input field // No need to change state when amount is changed. State contains the info we need to calculate any amount
 
 If user clicks switch:
   // Switch currency pair

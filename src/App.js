@@ -16,8 +16,10 @@ class App extends React.Component {
     
     this.state = {
       allCurrencies: [],
+      baseCurrency: {},
     }
     // this.toggleNavbar = this.toggleNavbar.bind(this);
+    this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
   }
 
 
@@ -42,6 +44,51 @@ class App extends React.Component {
       // deal with error
     });
 
+    // Get exchange rate for default base currency EUR and add them to state
+    fetch('https://api.frankfurter.app/latest')
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      console.log('data in fetch request for EUR rates: ', data);
+      // work with data
+      this.setState({
+        baseCurrency: data,
+      });
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
+  }
+
+  handleCurrencyChange(e) {
+    // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
+    e.preventDefault();
+    // console.log('handleCurrencyChange() runs');
+    // Get the currency the user clicked on:
+    let newCurrency = e.target.text.substring(0,3);
+    // get data for new base currency
+
+    fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      console.log('data in fetch request for EUR rates: ', data);
+      // work with data
+      this.setState({
+        baseCurrency: data,
+      });
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
   }
   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
@@ -76,7 +123,7 @@ class App extends React.Component {
 
   render() {
     console.log('state in App.js render(): ', this.state);
-    let { allCurrencies } = this.state;
+    let { allCurrencies, baseCurrency } = this.state;
 
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
@@ -86,26 +133,25 @@ class App extends React.Component {
     // Pass dropdownItemArray to child components are props and render dropdown item there
 
 
-
-    let baseCurrency = 
-    {
-      "amount":1.0,
-      "base":"EUR",
-      "date":"2021-04-16",
-      "rates":{
-        "AUD":1.6141,
-        "BGN":1.9558,
-        "BRL":4.5666,
-        "CAD":1.5,
-        "CHF":1.1263,
-        "CNY":7.7228,
-        "CZK":25.766,
-        "DKK":7.4681,
-        "GBP":0.8762,
-        "HKD":8.7656,
-        //... more currencies
-      }
-    };
+    // let baseCurrency = 
+    // {
+    //   "amount":1.0,
+    //   "base":"EUR",
+    //   "date":"2021-04-16",
+    //   "rates":{
+    //     "AUD":1.6141,
+    //     "BGN":1.9558,
+    //     "BRL":4.5666,
+    //     "CAD":1.5,
+    //     "CHF":1.1263,
+    //     "CNY":7.7228,
+    //     "CZK":25.766,
+    //     "DKK":7.4681,
+    //     "GBP":0.8762,
+    //     "HKD":8.7656,
+    //     //... more currencies
+    //   }
+    // };
 
     // SOLUTION 1: WORKS!
     // Kann ich auf die Elemente mit Klasse currency-dropdown überhaupt schon zugreifen zu diesem Zeitpunkt?
@@ -154,7 +200,7 @@ class App extends React.Component {
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
+            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} onCurrencyChange={ this.handleCurrencyChange } />} />
             <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
           </Routes>
 
