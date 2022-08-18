@@ -15,21 +15,27 @@ class CurrencyConverter extends React.Component {
     }
 
     this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
   }
 
-  // When I change the second currency, currentPair is not updated.
-  // When I change the first currency: Only the keys included in this.setState below are still in state, the rest are missing. 
-  // But state updates are supposed to merge? According to: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
+  // ********* HANDLE CURRENCY CHANGE *****************
+  // On currency change in first dropdown:
+    // Change base currency in state in App.js
+    // Change baseOfPair in currentPair in state in CurrencyConverter
+  // On currency change in second dropdown:
+    // DO NOT change base currency in state in App.js - the base currency is unchanged
+    // Change currentPair.pairedCurrency in state in CurrencyConverter
+    // NO NEED to fetch anything from API
   handleCurrencyChange(e) {
     e.preventDefault();
     console.log('handleCurrencyChange runs');
+    let { onBaseCurrencyChange } = this.props;
     // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
     
     // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
 
     // If user changes currency in top input field:
-    // if e.target has classname currency-picker1:
     if (e.target.closest('ul').classList.contains('currency-picker-1')) {
       // get data for new base currency
       fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
@@ -43,53 +49,86 @@ class CurrencyConverter extends React.Component {
         console.log('data in fetch request for EUR rates: ', data);
         // Using a callback function and rest operator to partially update state
         this.setState(() => ({
-          baseCurrency: data,
+          // baseCurrency: data, // this needs to be changed inside App!
           currentPair: {
             ...this.state.currentPair,
             baseOfPair: newCurrency,
           }
+
         }));
+
+        // change base currency in App.js
+        onBaseCurrencyChange(data);
+
       }).catch(error => {
         console.log(error);
         // deal with error
       });
-      
-    } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
-      // change baseCurrency
-      // change currentPair: baseOfPair to new currency
+
+
     // Else if user changes currency in bottom input field:
-    // if e.target has classname currency-picker2:
-      // change currentPair: pairedCurrency to new currency
-      // get data for new base currency
-      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
+    } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
+      console.log('second if conditional runs'); //NO
+      this.setState(() => ({
+        currentPair: {
+          ...this.state.currentPair,
+          pairedCurrency: newCurrency,
         }
-  
-        throw new Error('Request was either a 404 or 500');
-      }).then(data => {
-        console.log('data in fetch request for EUR rates: ', data);
-        // work with data
-        // let pairedCurrency = newCurrency;
-        console.log('newCurrency: ', newCurrency);
-        // this.setState({
-        //   currentPair: {
-        //     pairedCurrency: newCurrency,
-        //   }
-        // });
-        this.setState(() => ({
-          currentPair: {
-            ...this.state.currentPair,
-            pairedCurrency: newCurrency,
-          }
-        }));
-      }).catch(error => {
-        console.log(error);
-        // deal with error
-      });
+      }));
     }
   } 
+
+  // ********** HANDLE AMOUNT CHANGE *************
+  // Differentiate between amount change in first and second input field:
+  // On amount change in first input field:
+    // Calculate correct amount for paired currency
+    // Update local state in CurrencyConverter
+    // Render in second input field (controlled component)
+    handleAmountChange(e) {
+      // e.preventDefault(); ??
+      console.log(e.target.value);
+      let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
+      let { amount, base, date, rates } = this.props.baseCurrency;
+      let newAmount = +e.target.value; // Handle '' input
+      
+      // If user changes amount in first input field:
+      if (e.target.classList.contains('amount-input-1')) {
+        // On page load / On amount change // What happens when both change?
+        // let newValue = this.state.baseCurrency.rates[pairedCurrency] * newAmount;
+        let newAmountPairedCurrency = newAmount * rates[pairedCurrency];
+        this.setState({
+          currentPair: {
+            ...this.state.currentPair,
+            amountBaseOfPair: newAmount,
+            /* calculate new base currency amount */
+            amountPairedCurrency: newAmountPairedCurrency,
+          }
+        });
+        
+    // On amount change in second input field:
+      // Get new amount
+      // Calculate amount of base currency
+      // Update local state in Currency Converter
+      // Render in first input field (controlled component)
+    } else if (e.target.classList.contains('amount-input-2')) {
+      // new amount -> amountPairedCurrency
+      // *** Use library money.js to calculate new amounts ***
+      // amountPairedCurrency is 0 => Infinity
+      // I need the previous amount if pairedCurrency (not 0)
+      // Should be in state
+      let newAmountBaseOfPair = (amountBaseOfPair / amountPairedCurrency) * newAmount;
+      this.setState({
+        currentPair: {
+          ...this.state.currentPair,
+          amountPairedCurrency: newAmount,
+          amountBaseOfPair: newAmountBaseOfPair,
+        }
+      });
+      // calculate new amount for base currency
+      // update state with both new values
+
+    }
+  }
 
 
   render() {
@@ -165,7 +204,7 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 1 */}
           <div className="input-group mb-3">
-            <input value={ amountBaseOfPair} /* onChange={ onAmountChange } */ type="text" className="form-control amount-input-1" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={ amountBaseOfPair} onChange={ (e) => this.handleAmountChange(e) }  type="text" className="form-control amount-input-1" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
         </div>
         <div className="col-12 col-lg-6">
@@ -175,7 +214,7 @@ class CurrencyConverter extends React.Component {
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
-            <ul /* onClick={(e) => onCurrencyChange(e)}  */className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
+            <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
                 dropdownItemArray.map(item => {
                   return <li><a href="">{item[0]} {item[1]}</a></li>;
@@ -185,7 +224,11 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 2 */}
           <div className="input-group mb-3">
-            <input value={ rates ? rates.USD * amountBaseOfPair : amountPairedCurrency } /* onChange={ onAmountChange }  */type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            {/* This works, as long as we don't add handler for changing amount in second input field:
+            rates ? rates[pairedCurrency] * amountBaseOfPair : 'none'
+             */}
+             {/* `rates` are not immediately available on loading, so I have to accoutn for that */}
+            <input value={ amountPairedCurrency === 0 && rates ? (rates[pairedCurrency] * amountBaseOfPair) : amountPairedCurrency } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           <button type="button" className="btn btn-outline-primary">

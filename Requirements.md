@@ -3,6 +3,8 @@ Added state to CurrencyConverter, with property `currentPair`, previously in App
 Commented out handleCurrencyChange and handleAmountChange in App.js.
 Copied handleCurrencyChange into CurrencyConverter. 
 TODO: Make it work
+** OK for first currency input field **
+** OK for second currency input field **
 Copy handleAmountChange into CurrencyConverter and make it work. 
 Let user change amount in second input field without switching base currencies.
 Add functionality to switch button.

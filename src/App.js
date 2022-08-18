@@ -28,6 +28,7 @@ class App extends React.Component {
     // this.toggleNavbar = this.toggleNavbar.bind(this);
     // this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
     // this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.handleBaseCurrencyChange = this.handleBaseCurrencyChange.bind(this);
   }
 
 
@@ -68,6 +69,12 @@ class App extends React.Component {
     }).catch(error => {
       console.log(error);
       // deal with error
+    });
+  }
+
+  handleBaseCurrencyChange(newBase) {
+    this.setState({
+      baseCurrency: newBase,
     });
   }
 
@@ -296,7 +303,7 @@ class App extends React.Component {
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray}  />} />
+            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} onBaseCurrencyChange={ this.handleBaseCurrencyChange } />} />
             <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
           </Routes>
 
