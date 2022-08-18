@@ -1,3 +1,13 @@
+# TODO
+Added state to CurrencyConverter, with property `currentPair`, previously in App.js
+Commented out handleCurrencyChange and handleAmountChange in App.js.
+Copied handleCurrencyChange into CurrencyConverter. 
+TODO: Make it work
+Copy handleAmountChange into CurrencyConverter and make it work. 
+Let user change amount in second input field without switching base currencies.
+Add functionality to switch button.
+
+
 # REQUIREMENTS	Currency Converter - Create React App
 
 ## Requirements
@@ -129,14 +139,20 @@ If user clicks drowdown arrow on currency menu:
     // Default value of amount input field is 1
     Calculate exchange rate of base currency to exchange currency based on current amount under input field ***NEXT TDDO***
     Display exchange rate in opposite input field
-******************************************************************************************************************************
-    If user changes currency amount: ==========***TODO: ADD ONCHANGE HANDLER TO SECOND AMOUNT INPUT FIELD***============
-******************************************************************************************************************************
+
+    If user changes currency amount in input 1: 
+
       Get exchange rate from state
       Calculate exchange rate based on current amount under input field
       Display exchange rate in opposite input field // No need to change state when amount is changed. State contains the info we need to calculate any amount
       CHECK IF CALCULATIONS ARE ACTUALLY CORRECT!
       USE LIBRARY MONEY.JS
+
+    If user changes currency amount in input 2:
+
+      (EUR amount / USD amount) * new USD amount
+
+    State for input fields?
 
 If user clicks switch:
   // Switch currency pair
@@ -150,9 +166,8 @@ If user clicks switch:
   EUR, 1
 
   Necessary information:
-    base: USD,
-    amount: 1
-    rates: currency: amount...
+    base currency, amount, rates - GET FROM STATE IN APP.js
+    /* we do not need currentPair and handleAmountChange, handlecurrencyChange here, because they do different things from what we need here. We need a function that fetches the new base currency and calculates the exchange rates based on rates and amount.*
 
   If user changes currency amount:
     Calculate exchange rates based on current base currency under input field

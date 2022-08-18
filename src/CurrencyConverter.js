@@ -5,19 +5,102 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
-    // this.state = {
-    //   allCurrencies: [],
-    // }
+    this.state = {
+      currentPair: {
+        baseOfPair: 'EUR',
+        amountBaseOfPair: 1,
+        pairedCurrency: 'USD',
+        amountPairedCurrency: 0, // calculate in componentDidMount / add later / calculate dynamically
+      }
+    }
+
+    this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
   }
 
+  // When I change the second currency, currentPair is not updated.
+  // When I change the first currency: Only the keys included in this.setState below are still in state, the rest are missing. 
+  // But state updates are supposed to merge? According to: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
+  handleCurrencyChange(e) {
+    e.preventDefault();
+    console.log('handleCurrencyChange runs');
+    // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
+    
+    // Get the currency the user clicked on:
+    let newCurrency = e.target.text.substring(0,3);
+
+    // If user changes currency in top input field:
+    // if e.target has classname currency-picker1:
+    if (e.target.closest('ul').classList.contains('currency-picker-1')) {
+      // get data for new base currency
+      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
   
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        console.log('data in fetch request for EUR rates: ', data);
+        // Using a callback function and rest operator to partially update state
+        this.setState(() => ({
+          baseCurrency: data,
+          currentPair: {
+            ...this.state.currentPair,
+            baseOfPair: newCurrency,
+          }
+        }));
+      }).catch(error => {
+        console.log(error);
+        // deal with error
+      });
+      
+    } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
+      // change baseCurrency
+      // change currentPair: baseOfPair to new currency
+    // Else if user changes currency in bottom input field:
+    // if e.target has classname currency-picker2:
+      // change currentPair: pairedCurrency to new currency
+      // get data for new base currency
+      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+  
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        console.log('data in fetch request for EUR rates: ', data);
+        // work with data
+        // let pairedCurrency = newCurrency;
+        console.log('newCurrency: ', newCurrency);
+        // this.setState({
+        //   currentPair: {
+        //     pairedCurrency: newCurrency,
+        //   }
+        // });
+        this.setState(() => ({
+          currentPair: {
+            ...this.state.currentPair,
+            pairedCurrency: newCurrency,
+          }
+        }));
+      }).catch(error => {
+        console.log(error);
+        // deal with error
+      });
+    }
+  } 
+
+
   render() {
     console.log('*****render() in CurrencyConverter runs******');
     let { amount, base, date, rates } = this.props.baseCurrency;
+    let { allCurrencies, dropdownItemArray } = this.props;
+    let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
+
     console.log('amount, base, date, rates: ', amount, base, date, rates);
-    let { allCurrencies, dropdownItemArray, onCurrencyChange, onAmountChange, currentPair } = this.props;
-    let { baseOfPair, amountBaseOfPair, pairedCurrency } = currentPair;
     console.log('this.props in render(): ', this.props);
+    console.log('this.state in render: ', this.state);
     // let { USD } = rates;
 
     
@@ -72,7 +155,7 @@ class CurrencyConverter extends React.Component {
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
             {/* Ich kann onCurrencyChange loggen, aber nicht aufrufen. Wieso nicht? */}
-            <ul onClick={(e) => onCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
+            <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
                 dropdownItemArray.map(item => {
                   return <li><a href="">{item[0]} {item[1]}</a></li>;
@@ -82,7 +165,7 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 1 */}
           <div className="input-group mb-3">
-            <input value={amountBaseOfPair} onChange={ onAmountChange } type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={ amountBaseOfPair} /* onChange={ onAmountChange } */ type="text" className="form-control amount-input-1" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
         </div>
         <div className="col-12 col-lg-6">
@@ -92,7 +175,7 @@ class CurrencyConverter extends React.Component {
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon="fa-solid fa-caret-down" />
             </button>
-            <ul onClick={(e) => onCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
+            <ul /* onClick={(e) => onCurrencyChange(e)}  */className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
                 dropdownItemArray.map(item => {
                   return <li><a href="">{item[0]} {item[1]}</a></li>;
@@ -102,7 +185,7 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 2 */}
           <div className="input-group mb-3">
-            <input value={rates ? rates[pairedCurrency] * amountBaseOfPair : 'still undefined'} type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={ rates ? rates.USD * amountBaseOfPair : amountPairedCurrency } /* onChange={ onAmountChange }  */type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           <button type="button" className="btn btn-outline-primary">
