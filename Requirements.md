@@ -18,7 +18,8 @@ in input field: if amount !== 0, show amount, else show 0
 Lower amount cannot be calculated dynamically inside the input element, as it can be changed by user. 
 
 ### BUGS
-- When both currencies are the same, the bottom input field shows NaN. Reason: The code for changing bottom amount divides by zero.
+- When I change either currency input to show the same currency as the other, the bottom input field shows NaN. 
+  - Possible reasons: The calculation in bottom input field
 - When I change the bottom currency amount, the top amount is Infinity
 
 
@@ -192,19 +193,27 @@ If user clicks switch:
 
   Necessary information:
     base currency, amount, rates - GET FROM STATE IN APP.js
-    /* we do not need currentPair and handleAmountChange, handlecurrencyChange here, because they do different things from what we need here. We need a function that fetches the new base currency and calculates the exchange rates based on rates and amount.*
+    /* we do not need currentPair and handleAmountChange, handlecurrencyChange here, because they do different things from what we need here. We need a function that handles a change on the base currency, updates the parent's state and renders the exchange rates based on rates and amount.*
 
   If user changes currency amount:
     Calculate exchange rates based on current base currency under input field
     Display exchange rates in tables below
 
   If user clicks dropdown arrow on currency menu:
-    Show all available currencies
+    Show all available currencies OK
+    // handleBaseCurrencyChangeRatesTable
     If user picks currency:
       Display currency (flag, abbreviation, full name) in input field
       // Default value of amount input field is 1
+
+      Extract new base currency
+      Call function in App.js to update state on base currency
+      Pass state as props to ERT
+      Render list of currencies, rates (* amount)
       Calculate exchange rates based on current amount
       Display exchange rates in tables below
+
+    // handleAmountChangeRatesTable
 
 
 

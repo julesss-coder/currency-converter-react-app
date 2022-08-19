@@ -1,13 +1,15 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
+
 /* Fontawesome */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
+
 
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
-    console.log('props in CurrencyConverter\'s constructor: ', props);
-    let { rates } = this.props.baseCurrency;
-
+    
     this.state = {
       currentPair: {
         baseOfPair: 'EUR',
@@ -21,6 +23,8 @@ class CurrencyConverter extends React.Component {
     this.handleAmountChange = this.handleAmountChange.bind(this);
   }
 
+ 
+
   // Once props are received, calculate amountPairedCurrency and change it in state
 
   // ********* HANDLE CURRENCY CHANGE *****************
@@ -33,7 +37,6 @@ class CurrencyConverter extends React.Component {
     // NO NEED to fetch anything from API
   handleCurrencyChange(e) {
     e.preventDefault();
-    console.log('handleCurrencyChange runs');
     let { onBaseCurrencyChange } = this.props;
     // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
     
@@ -51,10 +54,8 @@ class CurrencyConverter extends React.Component {
   
         throw new Error('Request was either a 404 or 500');
       }).then(data => {
-        console.log('data in fetch request for EUR rates: ', data);
         // Using a callback function and rest operator to partially update state
         this.setState(() => ({
-          // baseCurrency: data, // this needs to be changed inside App!
           currentPair: {
             ...this.state.currentPair,
             baseOfPair: newCurrency,
@@ -73,7 +74,6 @@ class CurrencyConverter extends React.Component {
 
     // Else if user changes currency in bottom input field:
     } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
-      console.log('second if conditional runs'); //NO
       this.setState(() => ({
         currentPair: {
           ...this.state.currentPair,
@@ -91,7 +91,6 @@ class CurrencyConverter extends React.Component {
     // Render in second input field (controlled component)
     handleAmountChange(e) {
       // e.preventDefault(); ??
-      console.log(e.target.value);
       let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
       let { amount, base, date, rates } = this.props.baseCurrency;
       let newAmount = +e.target.value; // Handle '' input
@@ -125,7 +124,6 @@ class CurrencyConverter extends React.Component {
       // (1 EUR / 1.0178 (EUR to USD rate)) * 5
       // => newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
       let newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
-      console.log('newAmountBaseOfPair: ', newAmountBaseOfPair);
 
       this.setState({
         currentPair: {
@@ -146,16 +144,10 @@ class CurrencyConverter extends React.Component {
     if (this.props.baseCurrency) {
       propsUpdated = true;
     }
-    console.log('propsUpdated: ', propsUpdated)  ;
-    console.log('*****render() in CurrencyConverter runs******');
     let { amount, base, date, rates } = this.props.baseCurrency;
     let { allCurrencies, dropdownItemArray } = this.props;
     let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
 
-    console.log('amount, base, date, rates: ', amount, base, date, rates);
-    console.log('this.props in render(): ', this.props);
-    console.log('this.state in render: ', this.state);
-    // let { USD } = rates;
 
     
     // Append list of all currencies to all ul.currency-dropdown
@@ -206,7 +198,7 @@ class CurrencyConverter extends React.Component {
             <input value={baseOfPair} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
               </input>
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon="fa-solid fa-caret-down" />
+              <FontAwesomeIcon icon={faCaretDown } />
             </button>
             {/* Ich kann onCurrencyChange loggen, aber nicht aufrufen. Wieso nicht? */}
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
@@ -227,7 +219,7 @@ class CurrencyConverter extends React.Component {
           <div className="input-group mb-3">
             <input value={pairedCurrency} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon="fa-solid fa-caret-down" />
+              <FontAwesomeIcon icon={ faCaretDown } />
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {

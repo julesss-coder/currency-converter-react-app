@@ -18,16 +18,8 @@ class App extends React.Component {
     this.state = {
       allCurrencies: [],
       baseCurrency: {},
-      // currentPair: {
-      //   baseOfPair: 'EUR',
-      //   amountBaseOfPair: 1,
-      //   pairedCurrency: 'USD',
-      //   amountPairedCurrency: null, // calculate in componentDidMount / add later / calculate dynamically
-      // }
     }
-    // this.toggleNavbar = this.toggleNavbar.bind(this);
-    // this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
-    // this.handleAmountChange = this.handleAmountChange.bind(this);
+
     this.handleBaseCurrencyChange = this.handleBaseCurrencyChange.bind(this);
   }
 
@@ -43,9 +35,7 @@ class App extends React.Component {
       }
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      // console.log('json data: ', data);
       allCurrencies = data;
-      console.log('allCurrencies:', allCurrencies);
       this.setState({allCurrencies: allCurrencies});
     }).catch(error => {
       console.log(error);
@@ -61,8 +51,6 @@ class App extends React.Component {
 
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      console.log('data in fetch request for EUR rates: ', data);
-      // work with data
       this.setState({
         baseCurrency: data,
       });
@@ -80,126 +68,7 @@ class App extends React.Component {
     });
   }
 
-  // setAmountPairedCurrency() {
-
-  // }
-
-  // When I change the second currency, currentPair is not updated.
-  // When I change the first currency: Only the keys included in this.setState below are still in state, the rest are missing. 
-  // But state updates are supposed to merge? According to: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
-  // handleCurrencyChange(e) {
-  //   e.preventDefault();
-  //   console.log('handleCurrencyChange runs');
-  //   // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
-    
-  //   // Get the currency the user clicked on:
-  //   let newCurrency = e.target.text.substring(0,3);
-
-  //   // If user changes currency in top input field:
-  //   // if e.target has classname currency-picker1:
-  //   if (e.target.closest('ul').classList.contains('currency-picker-1')) {
-  //     // get data for new base currency
-  //     fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-  //     .then(response => {
-  //       if (response.ok) {
-  //         return response.json();
-  //       }
-  
-  //       throw new Error('Request was either a 404 or 500');
-  //     }).then(data => {
-  //       console.log('data in fetch request for EUR rates: ', data);
-  //       // Using a callback function and rest operator to partially update state
-  //       this.setState(() => ({
-  //         baseCurrency: data,
-  //         currentPair: {
-  //           ...this.state.currentPair,
-  //           baseOfPair: newCurrency,
-  //         }
-  //       }));
-  //     }).catch(error => {
-  //       console.log(error);
-  //       // deal with error
-  //     });
-      
-  //   } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
-  //     // change baseCurrency
-  //     // change currentPair: baseOfPair to new currency
-  //   // Else if user changes currency in bottom input field:
-  //   // if e.target has classname currency-picker2:
-  //     // change currentPair: pairedCurrency to new currency
-  //     // get data for new base currency
-  //     fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-  //     .then(response => {
-  //       if (response.ok) {
-  //         return response.json();
-  //       }
-  
-  //       throw new Error('Request was either a 404 or 500');
-  //     }).then(data => {
-  //       console.log('data in fetch request for EUR rates: ', data);
-  //       // work with data
-  //       // let pairedCurrency = newCurrency;
-  //       console.log('newCurrency: ', newCurrency);
-  //       // this.setState({
-  //       //   currentPair: {
-  //       //     pairedCurrency: newCurrency,
-  //       //   }
-  //       // });
-  //       this.setState(() => ({
-  //         currentPair: {
-  //           ...this.state.currentPair,
-  //           pairedCurrency: newCurrency,
-  //         }
-  //       }));
-  //     }).catch(error => {
-  //       console.log(error);
-  //       // deal with error
-  //     });
-  //   }
-  // }
-
-  // // Differentiate between amount change in first and second input field:
-  // handleAmountChange(e) {
-  //   // e.preventDefault(); ??
-  //   console.log(e.target.value);
-  //   let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
-  //   let newAmount = +e.target.value; // Handle '' input
-
-  //   // If user changes amount in first input field:
-  //   if (e.target.classList.contains('amount-input-1')) {
-  //     // On page load / On amount change // What happens when both change?
-  //     // let newValue = this.state.baseCurrency.rates[pairedCurrency] * newAmount;
-  //     this.setState({
-  //       currentPair: {
-  //         ...this.state.currentPair,
-  //         amountBaseOfPair: newAmount, /* calculate new base currency amount */
-  //       }
-  //     });
-  //     // Render amount in input field // Do not change state
-
-  //   } else if (e.target.classList.contains('amount-input-2')) {
-  //     // new amount -> amountPairedCurrency
-  //     // *** Use library money.js to calculate new amounts ***
-  //     let newAmountBaseOfPair = (amountBaseOfPair / amountPairedCurrency) * newAmount;
-  //     this.setState({
-  //       currentPair: {
-  //         ...this.state.currentPair,
-  //         amountPairedCurrency: newAmount,
-  //         amountBaseOfPair: newAmountBaseOfPair,
-  //       }
-  //     });
-  //     // calculate new amount for base currency
-  //     // update state with both new values
-
-  //   }
-
-  //   // Else if user changes amount in second input field
-
-
-
-
-  // }
-  
+   
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
   /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js 
   Source: URL: https://getbootstrap.com/docs/5.0/components/dropdowns/ */
@@ -240,28 +109,6 @@ class App extends React.Component {
     }
     // Pass dropdownItemArray to child components are props and render dropdown item there
     
-    console.log('state in App.js render(): ', this.state);
-
-    // let baseCurrency = 
-    // {
-    //   "amount":1.0,
-    //   "base":"EUR",
-    //   "date":"2021-04-16",
-    //   "rates":{
-    //     "AUD":1.6141,
-    //     "BGN":1.9558,
-    //     "BRL":4.5666,
-    //     "CAD":1.5,
-    //     "CHF":1.1263,
-    //     "CNY":7.7228,
-    //     "CZK":25.766,
-    //     "DKK":7.4681,
-    //     "GBP":0.8762,
-    //     "HKD":8.7656,
-    //     //... more currencies
-    //   }
-    // };
-
     // SOLUTION 1: WORKS!
     // Kann ich auf die Elemente mit Klasse currency-dropdown überhaupt schon zugreifen zu diesem Zeitpunkt?
     // Annahme: Nein, denn die Komponenten CurrencyConverter und ExchangeRatesTable wurde noch nicht geladen.
