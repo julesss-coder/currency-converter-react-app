@@ -1,4 +1,5 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 function ExchangeRatesTable(props) {
   let { amount, base, rates } = props.baseCurrency;
@@ -18,7 +19,7 @@ function ExchangeRatesTable(props) {
       Render amount in amount input field
   */
 
-  let top10currencies = ['USD', 'EUR', 'JPY'];
+  let top10currencies = ['USD', 'EUR', 'JPY', 'GBP'];
   
   return (
     <div className="row mt-3">
@@ -32,7 +33,7 @@ function ExchangeRatesTable(props) {
           <input value={ base } type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
             </input>
           <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <FontAwesomeIcon icon="fa-solid fa-caret-down" />
+            {/* <FontAwesomeIcon icon={ faCaretDown } /> */}
           </button>
           <ul className="dropdown-menu dropdown-menu-end currency-dropdown">
             {
@@ -60,17 +61,18 @@ function ExchangeRatesTable(props) {
             </tr>
           </thead>
           <tbody>
+              { console.log('data in props: ', props) }
  
               { 
-                /* top10currencies.map(currency => {
-                  return (
-                    <tr>
-                      <th scope="row">{ currency }</th>
-                      <th scope="row">{ allCurrencies[currency] }</th>
-                      <td className="text-end">{ rates[currency] }</td>
-                    </tr>
-                  )
-                }) */
+                // top10currencies.map(currency => {
+                //   return (
+                //     <tr>
+                //       <th scope="row">{ currency }</th>
+                //       <th scope="row">{ allCurrencies[currency] }</th>
+                //       <td className="text-end">{ rates[currency] }</td>
+                //     </tr>
+                //   )
+                // })
 
               }
               

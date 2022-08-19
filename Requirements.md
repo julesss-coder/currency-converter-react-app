@@ -21,6 +21,7 @@ Lower amount cannot be calculated dynamically inside the input element, as it ca
 - When I change either currency input to show the same currency as the other, the bottom input field shows NaN. 
   - Possible reasons: The calculation in bottom input field
 - When I change the bottom currency amount, the top amount is Infinity
+- If user enters letter or non-number key, amount input shows NaN.
 
 
 # REQUIREMENTS	Currency Converter - Create React App

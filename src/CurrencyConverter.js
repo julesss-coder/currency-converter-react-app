@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 
 /* Fontawesome */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons'
+// import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
 
 
 class CurrencyConverter extends React.Component {
@@ -198,7 +198,7 @@ class CurrencyConverter extends React.Component {
             <input value={baseOfPair} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
               </input>
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon={faCaretDown } />
+              {/* <FontAwesomeIcon icon={faCaretDown } /> */}
             </button>
             {/* Ich kann onCurrencyChange loggen, aber nicht aufrufen. Wieso nicht? */}
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
@@ -219,7 +219,7 @@ class CurrencyConverter extends React.Component {
           <div className="input-group mb-3">
             <input value={pairedCurrency} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <FontAwesomeIcon icon={ faCaretDown } />
+              {/* <FontAwesomeIcon icon={ faCaretDown } /> */}
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
