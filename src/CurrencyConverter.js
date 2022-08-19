@@ -5,6 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
+    console.log('props in CurrencyConverter\'s constructor: ', props);
+    let { rates } = this.props.baseCurrency;
+
     this.state = {
       currentPair: {
         baseOfPair: 'EUR',
@@ -17,6 +20,8 @@ class CurrencyConverter extends React.Component {
     this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
     this.handleAmountChange = this.handleAmountChange.bind(this);
   }
+
+  // Once props are received, calculate amountPairedCurrency and change it in state
 
   // ********* HANDLE CURRENCY CHANGE *****************
   // On currency change in first dropdown:
@@ -116,7 +121,12 @@ class CurrencyConverter extends React.Component {
       // amountPairedCurrency is 0 => Infinity
       // I need the previous amount if pairedCurrency (not 0)
       // Should be in state
-      let newAmountBaseOfPair = (amountBaseOfPair / amountPairedCurrency) * newAmount;
+      // E.g. 5 USD = x EUR?
+      // (1 EUR / 1.0178 (EUR to USD rate)) * 5
+      // => newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
+      let newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
+      console.log('newAmountBaseOfPair: ', newAmountBaseOfPair);
+
       this.setState({
         currentPair: {
           ...this.state.currentPair,
@@ -132,6 +142,11 @@ class CurrencyConverter extends React.Component {
 
 
   render() {
+    let propsUpdated = false;
+    if (this.props.baseCurrency) {
+      propsUpdated = true;
+    }
+    console.log('propsUpdated: ', propsUpdated)  ;
     console.log('*****render() in CurrencyConverter runs******');
     let { amount, base, date, rates } = this.props.baseCurrency;
     let { allCurrencies, dropdownItemArray } = this.props;
@@ -224,11 +239,28 @@ class CurrencyConverter extends React.Component {
           </div>
           {/* Amount input 2 */}
           <div className="input-group mb-3">
-            {/* This works, as long as we don't add handler for changing amount in second input field:
-            rates ? rates[pairedCurrency] * amountBaseOfPair : 'none'
-             */}
-             {/* `rates` are not immediately available on loading, so I have to accoutn for that */}
-            <input value={ amountPairedCurrency === 0 && rates ? (rates[pairedCurrency] * amountBaseOfPair) : amountPairedCurrency } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            {/* PROBLEM:
+            On initial page load, amountPairedCurrency shows 0, as it is not updated in state until user changes it.
+            SOLUTION: In order to show the correct amount: 
+              If amountPairedCurreny === 0 AND once rates are defined (passed in as props from App.js):
+                Calculate amountPairedCurrency based on rates
+              Otherwise, get it directly from state */}
+
+            {/* 
+            If both currencies are the same, bottom input shows NaN because rates[pairedCurrency] does not exist - the paired currency is not in the list of rates for the bast currency, if base currency === paired currency
+                EUR 1
+                USD 0.98 -> set to EUR -> must show 1
+
+                EUR 1 -> set to USD -> must show 0.98
+                USD 0.98
+
+            if paired currency is set to base currency:  
+              amountPairedCurrency = amountBaseOfPair
+            else if base currency is set to paired currency:
+              amountBaseOfPair = amountPairedCurrency / or amountBaseOfPair / rates[pairedCurrency] (Stimmt das???)
+            
+            */}
+            <input value={ rates && amountPairedCurrency === 0 ? rates[pairedCurrency] * amountBaseOfPair : amountPairedCurrency   } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           <button type="button" className="btn btn-outline-primary">

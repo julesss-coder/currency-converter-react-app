@@ -5,9 +5,21 @@ Copied handleCurrencyChange into CurrencyConverter.
 TODO: Make it work
 ** OK for first currency input field **
 ** OK for second currency input field **
-Copy handleAmountChange into CurrencyConverter and make it work. 
+Copy handleAmountChange into CurrencyConverter and make it work.
+
 Let user change amount in second input field without switching base currencies.
 Add functionality to switch button.
+
+this.state.currenPair.amountPairedCurrency = 0
+on user change of amount: set amount to new amount
+
+in input field: if amount !== 0, show amount, else show 0
+
+Lower amount cannot be calculated dynamically inside the input element, as it can be changed by user. 
+
+### BUGS
+- When both currencies are the same, the bottom input field shows NaN. Reason: The code for changing bottom amount divides by zero.
+- When I change the bottom currency amount, the top amount is Infinity
 
 
 # REQUIREMENTS	Currency Converter - Create React App
@@ -61,6 +73,7 @@ Component hierarchy:
 ---
 
 ### QUESTIONS
+- Money.js uses different exchange rates than Frankfurter App. Can I use both?
 - Do I need nested routes on the CurrencyConverter and Exchange Rate Tables page?
 - Did I need to install popper.js to access popper.js/core? How can I remove it?
 - Do I need to import Bootstrap JS?
@@ -93,6 +106,16 @@ CurrencyConverter component:
 - Q: How to setState for only one (sub)property of this.state, without copying all the parts of state that stay the same?
 - A: URL: https://reactjs.org/docs/state-and-lifecycle.html#state-updates-are-merged 
 - Is the calculation of exchange rates correct when user changes currency in lower input field?
+
+- On showing the correct amount of the paired currency in bottom input field:
+  - Current approach:
+    // PROBLEM:
+    // On initial page load, amountPairedCurrency shows 0, as it is not updated in state until user changes it.
+    // SOLUTION: In order to show the correct amount: 
+      // If amountPairedCurreny === 0 AND once rates are defined (passed in as props from App.js):
+        // Calculate amountPairedCurrency based on rates
+      // Otherwise, get it directly from state 
+  - Question: Is it possible and would it be easier to update amountPairedCurrency in local state once the state in App.js is updated (we need its data to get the initial amountPairedCurrency)?
 
 ### PROCESS
 See "Thinking in React"

@@ -66,6 +66,8 @@ class App extends React.Component {
       this.setState({
         baseCurrency: data,
       });
+
+      // call setAmountPairedCurrency 
     }).catch(error => {
       console.log(error);
       // deal with error
@@ -77,6 +79,10 @@ class App extends React.Component {
       baseCurrency: newBase,
     });
   }
+
+  // setAmountPairedCurrency() {
+
+  // }
 
   // When I change the second currency, currentPair is not updated.
   // When I change the first currency: Only the keys included in this.setState below are still in state, the rest are missing. 
