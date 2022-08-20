@@ -165,10 +165,8 @@ class CurrencyConverter extends React.Component {
 
 
   render() {
-    console.log('state in CC: ', this.state);
     let { allCurrencies, baseCurrency, currentPair } = this.state;
     let { base, amount, rates } = baseCurrency;
-    console.log('rates: ', rates);
     let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = currentPair;
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
@@ -236,7 +234,7 @@ class CurrencyConverter extends React.Component {
               ? 
                 base !== pairedCurrency 
                   ? 
-                  rates[pairedCurrency] * amountBaseOfPair 
+                  rates[pairedCurrency] * amountBaseOfPair
                   :
                   amountBaseOfPair
                 : 

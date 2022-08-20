@@ -5,11 +5,12 @@ class ExchangeRatesTable extends React.Component {
     super(props);
 
     this.state = {
-      allCurrencies: [],
+      allCurrencies: {}, // initially set to array, I checked its lenght in the logic in render, but at that point, it was set to an object => that's why the condition allCurrencies.length > 0 returned false
       baseCurrency: {},
     }
 
     this.handleBaseCurrencyChange = this.handleBaseCurrencyChange.bind(this);
+    this.handleAmountChange = this.handleAmountChange.bind(this);
   }
 
   componentDidMount() {
@@ -21,7 +22,6 @@ class ExchangeRatesTable extends React.Component {
       }
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      console.log('data for allCurrencies: ', data);
       this.setState({allCurrencies: data});
     }).catch(error => {
       console.log(error);
@@ -61,7 +61,6 @@ class ExchangeRatesTable extends React.Component {
 
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      console.log('data in handleBaseCurrencyChange:', data);
       // Using a callback function and rest operator to partially update state
       this.setState(() => ({
         baseCurrency: data,
@@ -71,6 +70,26 @@ class ExchangeRatesTable extends React.Component {
       // deal with error
     });
   }
+
+  //*********** */
+  handleAmountChange(e) {
+    let newAmount = +e.target.value;
+    this.setState({
+      baseCurrency: {
+        ...this.state.baseCurrency,
+        amount: newAmount,
+      }
+    });
+    /* 
+    If user changes amount:
+      update baseCurrencyAmount in state
+
+      For each currency in currency table:
+        Exchange rate = baseCurrencyAmount * baseCurrency.rates[currency]
+    
+    */
+  }
+  //************* */
 
   
 
@@ -84,72 +103,9 @@ class ExchangeRatesTable extends React.Component {
     }
 
     let ratesAmountInput = document.getElementsByClassName('rates-amount-input')[0];
-    let top10currencies = ['EUR', 'USD', 'JPY'];
-    let top10List;
-    // Once all currencies are defined and > 0
-    // AND once baseCurrency.rates is defined:
-    // if (allCurrencies !== undefined && allCurrencies.length > 0 && baseCurrency.rates !== undefined) {
-    //   // Render top 10 currencies
-    //   top10List = top10currencies.map(currency => {
-    //     if (currency === baseCurrency.base) {
-    //       return (
-    //         <tr>
-    //           <th scope="row">{ currency }</th>
-    //           <th scope="row">{ allCurrencies[currency] }</th>
-    //           <td className="text-end">{ baseCurrency.base }</td>
-    //         </tr>
-    //       )
-    //     } else {
-    //       return (
-    //         <tr>
-    //           <th scope="row">{ currency }</th>
-    //           <th scope="row">{ allCurrencies[currency] }</th>
-    //           <td className="text-end">{ baseCurrency.rates[currency] }</td>
-    //         </tr>
-    //       )
-    //     }
-    //   });
+    let top10currencies = ['EUR', 'USD', 'JPY', 'GBP','AUD',  'CAD', 'CHF', 'CNY', 'HKD', 'NZD'];
 
-    //   console.log('top10List: ', top10List);
-    // }
-  
-
-
-
-    // top10currencies.map(currency => {
-    //   if (currency === baseCurrency.base) {
-    //     return (
-    //       <tr>
-    //         <th scope="row">{ currency }</th>
-    //         <th scope="row">{ allCurrencies[currency] }</th>
-    //         <td className="text-end">{ baseCurrency.base }</td>
-    //       </tr>
-    //     )
-    //   } else {
-    //     return (
-    //       <tr>
-    //         <th scope="row">{ currency }</th>
-    //         <th scope="row">{ allCurrencies[currency] }</th>
-    //         <td className="text-end">{ baseCurrency.rates[currency] }</td>
-    //       </tr>
-    //     )
-    //   }
-    // });
-  
-  
-    /* 
-    Render top 10 currencies dynamically
-    
-    If base is in top 10 list:
-      For each currency in top 10, except base:
-        Render rates.currency
-  
-      For base in top 10: 
-        Render amount in amount input field
-    */
-  
-  
-
+    let allCurrenciesArray = Object.entries(allCurrencies);
 
     return (
       <div className="row mt-3">
@@ -174,40 +130,14 @@ class ExchangeRatesTable extends React.Component {
             </ul>
           </div>
 
-          {/* Amount input 1 */}
+          {/* Amount input  */}
           <div className="input-group mb-3 rates-amount-input">
-            <input value={ baseCurrency.amount } type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={ baseCurrency.amount } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
         </div>
         {/* Exchange rates of Top 10 currencies */}
         <div className="col-12 col-lg-7 mt-3">
-          <h3>Top 10 currencies</h3>
-          {
-                allCurrencies !== undefined && allCurrencies.length > 0 && baseCurrency.rates !== undefined
-                ?
-                top10List = top10currencies.map(currency => {
-                  if (currency === baseCurrency.base) {
-                    return (
-                      <tr>
-                        <th scope="row">{ currency }</th>
-                        <th scope="row">{ allCurrencies[currency] }</th>
-                        <td className="text-end">{ baseCurrency.base }</td>
-                      </tr>
-                    )
-                  } else {
-                    return (
-                      <tr>
-                        <th scope="row">{ currency }</th>
-                        <th scope="row">{ allCurrencies[currency] }</th>
-                        <td className="text-end">{ baseCurrency.rates[currency] }</td>
-                      </tr>
-                    )
-                  }
-                })
-                :
-                'not working'
-              }
-
+          <h3>Top 10 currencies</h3>       
           <table className="table table-striped table-hover">
             <thead>
               <tr>
@@ -217,59 +147,31 @@ class ExchangeRatesTable extends React.Component {
               </tr>
             </thead>
             <tbody> 
-
-
-
-              {/* <tr>
-                <th scope="row">USD</th>
-                <th scope="row">US dollar</th>
-                <td className="text-end"></td>
-              </tr>
-              <tr>
-                <th scope="row">EUR</th>
-                <th scope="row">Euro</th>
-                <td className="text-end">1</td>
-              </tr>
-              <tr>
-                <th scope="row">JPY</th>
-                <th scope="row">Japanese yen</th>
-                <td className="text-end"></td>
-              </tr>
-              <tr>
-                <th scope="row">GBP</th>
-                <th scope="row">Pound sterling</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">AUD</th>
-                <th scope="row">Australian dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CAD</th>
-                <th scope="row">Canadian dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CHF</th>
-                <th scope="row">Swiss franc</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CNH</th>
-                <th scope="row">Chinese renminbi</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">HKD</th>
-                <th scope="row">Hong Kong dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">NZD</th>
-                <th scope="row">New Zealand dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr> */}
+            {
+                allCurrencies !== undefined && baseCurrency.rates !== undefined
+                ?
+                top10currencies.map(currency => {
+                  if (currency === baseCurrency.base) {
+                    return (
+                      <tr>
+                        <th scope="row">{ currency }</th>
+                        <th scope="row">{ allCurrencies[currency] }</th>
+                        <td className="text-end">{ baseCurrency.amount }</td>
+                      </tr>
+                    )
+                  } else {
+                    return (
+                      <tr>
+                        <th scope="row">{ currency }</th>
+                        <th scope="row">{ allCurrencies[currency] }</th>
+                        <td className="text-end">{ (baseCurrency.rates[currency] * baseCurrency.amount).toFixed(5) }</td>
+                      </tr>
+                    )
+                  }
+                })
+                :
+                'no data received'
+              }
             </tbody>
           </table>
         </div>
@@ -284,57 +186,32 @@ class ExchangeRatesTable extends React.Component {
                 <th className="text-end" scope="col">Exchange rate</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">USD</th>
-                <th scope="row">US dollar</th>
-                <td className="text-end">1</td>
-              </tr>
-              <tr>
-                <th scope="row">EUR</th>
-                <th scope="row">Euro</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">JPY</th>
-                <th scope="row">Japanese yen</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">GBP</th>
-                <th scope="row">Pound sterling</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">AUD</th>
-                <th scope="row">Australian dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CAD</th>
-                <th scope="row">Canadian dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CHF</th>
-                <th scope="row">Swiss franc</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">CNH</th>
-                <th scope="row">Chinese renminbi</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">HKD</th>
-                <th scope="row">Hong Kong dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
-              <tr>
-                <th scope="row">NZD</th>
-                <th scope="row">New Zealand dollar</th>
-                <td className="text-end">0.9821</td>
-              </tr>
+            <tbody className="all-currencies-table">
+           {
+              allCurrencies !== undefined && baseCurrency.rates !== undefined
+              ?
+              allCurrenciesArray.map(currency => {
+                if (currency[0] === baseCurrency.base) {
+                  return (
+                    <tr>
+                      <th scope="row">{currency[0]}</th>
+                      <th scope="row">{allCurrencies[currency[0]]}</th>
+                      <td className="text-end">{baseCurrency.amount}</td>
+                    </tr>
+                  )
+                } else {
+                  return (
+                    <tr>
+                      <th scope="row">{currency[0]}</th>
+                      <th scope="row">{allCurrencies[currency[0]]}</th>
+                      <td className="text-end">{ (baseCurrency.rates[currency[0]] * baseCurrency.amount).toFixed(5) }</td>
+                    </tr>
+                  )
+                }
+              })
+              :
+              'no data received'
+            } 
             </tbody>
           </table>
         </div>
