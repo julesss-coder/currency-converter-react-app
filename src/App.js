@@ -14,60 +14,7 @@ import { faList } from '@fortawesome/free-solid-svg-icons';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    
-    this.state = {
-      allCurrencies: [],
-      baseCurrency: {},
-    }
-
-    this.handleBaseCurrencyChange = this.handleBaseCurrencyChange.bind(this);
   }
-
-
-  componentDidMount() {
-    // Get list of all available currencies and add them to state
-    let allCurrencies;
-
-    fetch('https://altexchangerateapi.herokuapp.com/currencies')
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      allCurrencies = data;
-      this.setState({allCurrencies: allCurrencies});
-    }).catch(error => {
-      console.log(error);
-      // deal with error
-    });
-
-    // Get exchange rate for default base currency EUR and add them to state
-    fetch('https://api.frankfurter.app/latest')
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      this.setState({
-        baseCurrency: data,
-      });
-
-      // call setAmountPairedCurrency 
-    }).catch(error => {
-      console.log(error);
-      // deal with error
-    });
-  }
-
-  handleBaseCurrencyChange(newBase) {
-    this.setState({
-      baseCurrency: newBase,
-    });
-  }
-
    
   /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
   /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js 
@@ -100,33 +47,6 @@ class App extends React.Component {
   // }
 
   render() {
-    let { allCurrencies, baseCurrency } = this.state;
-    
-    // Create an array of dropdown items (one item per currency)
-    let dropdownItemArray = [];
-    for (let key in allCurrencies) {
-      dropdownItemArray.push([key, allCurrencies[key]]);
-    }
-    // Pass dropdownItemArray to child components are props and render dropdown item there
-    
-    // SOLUTION 1: WORKS!
-    // Kann ich auf die Elemente mit Klasse currency-dropdown überhaupt schon zugreifen zu diesem Zeitpunkt?
-    // Annahme: Nein, denn die Komponenten CurrencyConverter und ExchangeRatesTable wurde noch nicht geladen.
-    // Soll ich das ganze in ComponentDidMount in den beiden Komponenten gegeben geben?
-    // Wenn parent component gemountet ist, heißt das, dass auch alle child components gemountet sind?
-    // let currencyDropdown = Array.from(document.getElementsByClassName('currency-dropdown'));
-    // // Antwort: Nur nach einem Re-Render der Seite loggt die folgende Zeile die jeweiligen Dropdowns, d.h. 2, wenn ich CurrencyConverter Seite lade, 1 wenn ich ExchangeRateTables lade.
-    // console.log('currencyDropdown: ', currencyDropdown);
-    // let { allCurrencies } = this.state;
-    // currencyDropdown.forEach(dropdown => {
-    //   for (let key in allCurrencies) {
-    //     let currencyItem = document.createElement('li');
-    //     currencyItem.innerHTML = `<li><a className="dropdown-item" href="#">${[key]} ${allCurrencies[key]}</a></li>`;
-    //     dropdown.appendChild(currencyItem);
-    //   }
-    // });
-    
-
     return (
       <Router>
         {/* Bootstrap 5 container */}
@@ -145,19 +65,17 @@ class App extends React.Component {
                 <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                   <li className="nav-item">
                     <Link to="/" className="nav-link active" aria-current="page" href="#">Currency Converter</Link>
-                    {/* <a className="nav-link active" aria-current="page" href="#">Currency Converter</a> */}
                   </li>
                   <li className="nav-item">
                     <Link to="/exchange-rates-table" className="nav-link" href="#">Exchange Rates Table</Link>
-                    {/* <a className="nav-link" href="#">Exchange Rates Table</a> */}
                   </li>
                 </ul>
               </div>
             </div>
           </nav>
           <Routes>
-            <Route path="/" exact element={< CurrencyConverter baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} onBaseCurrencyChange={ this.handleBaseCurrencyChange } />} />
-            <Route path="/exchange-rates-table" element={<ExchangeRatesTable baseCurrency={baseCurrency} allCurrencies={allCurrencies} dropdownItemArray={dropdownItemArray} />} />
+            <Route path="/" exact element={< CurrencyConverter />} />
+            <Route path="/exchange-rates-table" element={<ExchangeRatesTable />} />
           </Routes>
 
         

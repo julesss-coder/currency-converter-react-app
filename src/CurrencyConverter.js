@@ -1,21 +1,20 @@
 import React from 'react';
-import ReactDOM from 'react-dom'
 
 /* Fontawesome */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-
 
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
     
     this.state = {
+      allCurrencies: [],
+      baseCurrency: {},
       currentPair: {
         baseOfPair: 'EUR',
         amountBaseOfPair: 1,
         pairedCurrency: 'USD',
-        amountPairedCurrency: 0, // calculate in componentDidMount / add later / calculate dynamically
+        amountPairedCurrency: 0, // calculate in componentDidMount / add later / calculate dynamically???
       }
     }
 
@@ -24,20 +23,47 @@ class CurrencyConverter extends React.Component {
   }
 
  
+  componentDidMount() {
+    // Get list of all available currencies and add them to state
+    fetch('https://altexchangerateapi.herokuapp.com/currencies')
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      this.setState({allCurrencies: data});
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
 
-  // Once props are received, calculate amountPairedCurrency and change it in state
+    // Get exchange rate for default base currency EUR and add them to state
+    fetch('https://api.frankfurter.app/latest')
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      this.setState({
+        baseCurrency: data,
+      });
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
+  }
+
 
   // ********* HANDLE CURRENCY CHANGE *****************
   // On currency change in first dropdown:
     // Change base currency in state in App.js
     // Change baseOfPair in currentPair in state in CurrencyConverter
-  // On currency change in second dropdown:
-    // DO NOT change base currency in state in App.js - the base currency is unchanged
-    // Change currentPair.pairedCurrency in state in CurrencyConverter
-    // NO NEED to fetch anything from API
+
   handleCurrencyChange(e) {
     e.preventDefault();
-    let { onBaseCurrencyChange } = this.props;
     // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
     
     // Get the currency the user clicked on:
@@ -56,16 +82,12 @@ class CurrencyConverter extends React.Component {
       }).then(data => {
         // Using a callback function and rest operator to partially update state
         this.setState(() => ({
+          baseCurrency: data,
           currentPair: {
             ...this.state.currentPair,
             baseOfPair: newCurrency,
           }
-
         }));
-
-        // change base currency in App.js
-        onBaseCurrencyChange(data);
-
       }).catch(error => {
         console.log(error);
         // deal with error
@@ -73,6 +95,9 @@ class CurrencyConverter extends React.Component {
 
 
     // Else if user changes currency in bottom input field:
+      // DO NOT change base currency in state in App.js - the base currency is unchanged
+      // Change currentPair.pairedCurrency in state in CurrencyConverter
+      // NO NEED to fetch anything from API
     } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
       this.setState(() => ({
         currentPair: {
@@ -92,7 +117,7 @@ class CurrencyConverter extends React.Component {
     handleAmountChange(e) {
       // e.preventDefault(); ??
       let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
-      let { amount, base, date, rates } = this.props.baseCurrency;
+      let { amount, base, date, rates } = this.state.baseCurrency;
       let newAmount = +e.target.value; // Handle '' input
       
       // If user changes amount in first input field:
@@ -140,53 +165,18 @@ class CurrencyConverter extends React.Component {
 
 
   render() {
-    let propsUpdated = false;
-    if (this.props.baseCurrency) {
-      propsUpdated = true;
+    console.log('state in CC: ', this.state);
+    let { allCurrencies, baseCurrency, currentPair } = this.state;
+    let { base, amount, rates } = baseCurrency;
+    console.log('rates: ', rates);
+    let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = currentPair;
+    // Create an array of dropdown items (one item per currency)
+    let dropdownItemArray = [];
+    for (let key in allCurrencies) {
+      dropdownItemArray.push([key, allCurrencies[key]]);
     }
-    let { amount, base, date, rates } = this.props.baseCurrency;
-    let { allCurrencies, dropdownItemArray } = this.props;
-    let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
-
-
-    
-    // Append list of all currencies to all ul.currency-dropdown
-    // ***Is there a way to do this dynamically within the return statement?***
-    // IDEA: Create the ul element, add li elements, add in the whole ul element dynamically
-    // IDEA: Make a list of li elements (without them being children of a ul)
-
-    // SOLUTION 1: WORKS!
-      // let currencyDropdown = Array.from(document.getElementsByClassName('currency-dropdown'));
-      // currencyDropdown.forEach(dropdown => {
-      //   for (let key in allCurrencies) {
-      //     let currencyItem = document.createElement('li');
-      //     currencyItem.innerHTML = `<li><a className="dropdown-item" href="#">${[key]} ${allCurrencies[key]}</a></li>`;
-      //     dropdown.appendChild(currencyItem);
-      //   }
-      // });
-
-    // SOLUTION 2: DOES NOT WORK
-    // create the ul dropdown, add it in whereever the same dropdown is needed
-    // let currencyDropdown = document.createElement('ul');
-    // currencyDropdown.classList.add('dropdown-menu', 'dropdown-menu-end', 'currency-dropdown');
-    
-    // for (let key in allCurrencies) {
-    //   let dropdownItem = document.createElement('li');
-    //   dropdownItem.textContent = `<li>${key} ${allCurrencies[key]}</li>`;
-    //   currencyDropdown.appendChild(dropdownItem);
-    // }
-    // console.dir(currencyDropdown);
-
-    // SOLUTION 3: Turn allCurrencies into an array, dropdownItemArray
-    // map and render it inside return statement
-    // *** REDUNDANT, as it is rendered in three different places (as there are three identical dropdown menus)***
-    // *** SOLUTION 1 might be more suitable, as it is does not do redundant work. Have to put it into App.js and pass it down to CurrencyConverter and ExchnageRatesTable as props.***
-    // let dropdownItemArray = [];
-    // for (let key in allCurrencies) {
-    //   dropdownItemArray.push([key, allCurrencies[key]]);
-    // }
-  
-    // Why can I access `amount` and `base` in return statement, but not `rates`? All are in this.props.baseCurrency, and destructured at beginning of render().
+ 
+    // Why can I access `amount` and `base` in return statement, but not `rates`? 
     return (
       <div className="row mt-3">
         <h2 className="mb-3">Currency Converter</h2>
@@ -200,7 +190,6 @@ class CurrencyConverter extends React.Component {
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
               {/* <FontAwesomeIcon icon={faCaretDown } /> */}
             </button>
-            {/* Ich kann onCurrencyChange loggen, aber nicht aufrufen. Wieso nicht? */}
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
                 dropdownItemArray.map(item => {
@@ -232,27 +221,28 @@ class CurrencyConverter extends React.Component {
           {/* Amount input 2 */}
           <div className="input-group mb-3">
             {/* PROBLEM:
-            On initial page load, amountPairedCurrency shows 0, as it is not updated in state until user changes it.
+            A) On initial page load, amountPairedCurrency shows 0, as it is not updated in state until user changes it.
+            B) When both currencies are the same, bottom input shows NaN
             SOLUTION: In order to show the correct amount: 
-              If amountPairedCurreny === 0 AND once rates are defined (passed in as props from App.js):
-                Calculate amountPairedCurrency based on rates
-              Otherwise, get it directly from state */}
-
-            {/* 
-            If both currencies are the same, bottom input shows NaN because rates[pairedCurrency] does not exist - the paired currency is not in the list of rates for the bast currency, if base currency === paired currency
-                EUR 1
-                USD 0.98 -> set to EUR -> must show 1
-
-                EUR 1 -> set to USD -> must show 0.98
-                USD 0.98
-
-            if paired currency is set to base currency:  
-              amountPairedCurrency = amountBaseOfPair
-            else if base currency is set to paired currency:
-              amountBaseOfPair = amountPairedCurrency / or amountBaseOfPair / rates[pairedCurrency] (Stimmt das???)
-            
-            */}
-            <input value={ rates && amountPairedCurrency === 0 ? rates[pairedCurrency] * amountBaseOfPair : amountPairedCurrency   } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+              If amountPairedCurreny === 0 AND once rates are defined:
+                If base currency !== pairedCurrency:
+                  Calculate amountPairedCurrency based on rates
+                Else if base currency === pairedCurrency:
+                  Show amount of base currency
+              Else:
+                Get amountPairedCurrency directly from state */}
+            <input value={ 
+              (rates && amountPairedCurrency === 0) 
+              ? 
+                base !== pairedCurrency 
+                  ? 
+                  rates[pairedCurrency] * amountBaseOfPair 
+                  :
+                  amountBaseOfPair
+                : 
+                amountPairedCurrency
+              
+              } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           <button type="button" className="btn btn-outline-primary">

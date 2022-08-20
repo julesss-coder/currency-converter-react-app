@@ -221,3 +221,11 @@ If user clicks switch:
 ### API
 URL: https://altexchangerateapi.herokuapp.com/
 JSON object list on https://altexchangerateapi.herokuapp.com/currencies.
+
+
+========
+Direkt currentPair: amountPairedCurrency immer im state setzen, immer aus state beziehen?
+amountPairedCurrency = 
+baseAmount (from currentPair.amountBaseOfPair)
+* 
+base.rates for paired currency (from baseCurrency.rates[pairedCurrency])
