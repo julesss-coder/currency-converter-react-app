@@ -84,7 +84,38 @@ class ExchangeRatesTable extends React.Component {
     }
 
     let ratesAmountInput = document.getElementsByClassName('rates-amount-input')[0];
-    // let top10currencies = ['EUR', 'USD', 'JPY'];
+    let top10currencies = ['EUR', 'USD', 'JPY'];
+    let top10List;
+    // Once all currencies are defined and > 0
+    // AND once baseCurrency.rates is defined:
+    // if (allCurrencies !== undefined && allCurrencies.length > 0 && baseCurrency.rates !== undefined) {
+    //   // Render top 10 currencies
+    //   top10List = top10currencies.map(currency => {
+    //     if (currency === baseCurrency.base) {
+    //       return (
+    //         <tr>
+    //           <th scope="row">{ currency }</th>
+    //           <th scope="row">{ allCurrencies[currency] }</th>
+    //           <td className="text-end">{ baseCurrency.base }</td>
+    //         </tr>
+    //       )
+    //     } else {
+    //       return (
+    //         <tr>
+    //           <th scope="row">{ currency }</th>
+    //           <th scope="row">{ allCurrencies[currency] }</th>
+    //           <td className="text-end">{ baseCurrency.rates[currency] }</td>
+    //         </tr>
+    //       )
+    //     }
+    //   });
+
+    //   console.log('top10List: ', top10List);
+    // }
+  
+
+
+
     // top10currencies.map(currency => {
     //   if (currency === baseCurrency.base) {
     //     return (
@@ -152,37 +183,30 @@ class ExchangeRatesTable extends React.Component {
         <div className="col-12 col-lg-7 mt-3">
           <h3>Top 10 currencies</h3>
           {
-            this.state.allCurrencies.length < 0 
-            ?
-            'allCurrencies.length < 0'
-            :
-            console.log('allCurrencies.length > 0: ', allCurrencies.length)
-
-          }
-          {/* { (allCurrencies !== undefined) && (allCurrencies.length > 0) && (baseCurrency !== undefined)
-          ? 
-          top10currencies.map(currency => {
-            if (currency === baseCurrency.base) {
-              return (
-                <tr>
-                  <th scope="row">{ currency }</th>
-                  <th scope="row">{ allCurrencies[currency] }</th>
-                  <td className="text-end">{ baseCurrency.base }</td>
-                </tr>
-              )
-            } else {
-              return (
-                <tr>
-                  <th scope="row">{ currency }</th>
-                  <th scope="row">{ allCurrencies[currency] }</th>
-                  <td className="text-end">{ baseCurrency.rates[currency] }</td>
-                </tr>
-              )
-            }
-          })
-          :
-          'still undefined'
-        } */}
+                allCurrencies !== undefined && allCurrencies.length > 0 && baseCurrency.rates !== undefined
+                ?
+                top10List = top10currencies.map(currency => {
+                  if (currency === baseCurrency.base) {
+                    return (
+                      <tr>
+                        <th scope="row">{ currency }</th>
+                        <th scope="row">{ allCurrencies[currency] }</th>
+                        <td className="text-end">{ baseCurrency.base }</td>
+                      </tr>
+                    )
+                  } else {
+                    return (
+                      <tr>
+                        <th scope="row">{ currency }</th>
+                        <th scope="row">{ allCurrencies[currency] }</th>
+                        <td className="text-end">{ baseCurrency.rates[currency] }</td>
+                      </tr>
+                    )
+                  }
+                })
+                :
+                'not working'
+              }
 
           <table className="table table-striped table-hover">
             <thead>
@@ -193,7 +217,7 @@ class ExchangeRatesTable extends React.Component {
               </tr>
             </thead>
             <tbody> 
-                
+
 
 
               {/* <tr>

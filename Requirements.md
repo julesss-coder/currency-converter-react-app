@@ -229,3 +229,11 @@ amountPairedCurrency =
 baseAmount (from currentPair.amountBaseOfPair)
 * 
 base.rates for paired currency (from baseCurrency.rates[pairedCurrency])
+
+
+===
+Logic for top 10 currencies table in ERT
+Once all currencies are defined and > 0
+AND
+Once baseCurrency.rates is defined
+Render top 10 currencies
