@@ -71,8 +71,11 @@ class ExchangeRatesTable extends React.Component {
     });
   }
 
-  //*********** */
   handleAmountChange(e) {
+    if (isNaN(e.target.value)) {
+      return;
+    }
+
     let newAmount = +e.target.value;
     this.setState({
       baseCurrency: {
@@ -80,17 +83,7 @@ class ExchangeRatesTable extends React.Component {
         amount: newAmount,
       }
     });
-    /* 
-    If user changes amount:
-      update baseCurrencyAmount in state
-
-      For each currency in currency table:
-        Exchange rate = baseCurrencyAmount * baseCurrency.rates[currency]
-    
-    */
   }
-  //************* */
-
   
 
   render() {

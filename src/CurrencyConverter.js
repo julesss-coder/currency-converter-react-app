@@ -1,8 +1,5 @@
 import React from 'react';
 
-/* Fontawesome */
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +11,7 @@ class CurrencyConverter extends React.Component {
         baseOfPair: 'EUR',
         amountBaseOfPair: 1,
         pairedCurrency: 'USD',
-        amountPairedCurrency: 0, // calculate in componentDidMount / add later / calculate dynamically???
+        amountPairedCurrency: 0, 
       }
     }
 
@@ -64,7 +61,6 @@ class CurrencyConverter extends React.Component {
 
   handleCurrencyChange(e) {
     e.preventDefault();
-    // Funktion lässt sich nur von ul Element in CurrencyConverter aufrufen, wenn ich e.preventDefault(e) hier unterbringe!!! Wieso?
     
     // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
@@ -109,27 +105,25 @@ class CurrencyConverter extends React.Component {
   } 
 
   // ********** HANDLE AMOUNT CHANGE *************
-  // Differentiate between amount change in first and second input field:
-  // On amount change in first input field:
-    // Calculate correct amount for paired currency
-    // Update local state in CurrencyConverter
-    // Render in second input field (controlled component)
-    handleAmountChange(e) {
-      // e.preventDefault(); ??
-      let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
-      let { amount, base, date, rates } = this.state.baseCurrency;
-      let newAmount = +e.target.value; // Handle '' input
-      
-      // If user changes amount in first input field:
+  handleAmountChange(e) {
+    // e.preventDefault(); ??
+    let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = this.state.currentPair;
+    let { amount, base, date, rates } = this.state.baseCurrency;
+    if (isNaN(e.target.value)) {
+      return;
+    }
+    let newAmount = +e.target.value;
+    
+    // On amount change in first input field:
+      // Calculate correct amount for paired currency
+      // Update local state in CurrencyConverter
+      // Render in second input field (controlled component)
       if (e.target.classList.contains('amount-input-1')) {
-        // On page load / On amount change // What happens when both change?
-        // let newValue = this.state.baseCurrency.rates[pairedCurrency] * newAmount;
         let newAmountPairedCurrency = newAmount * rates[pairedCurrency];
         this.setState({
           currentPair: {
             ...this.state.currentPair,
             amountBaseOfPair: newAmount,
-            /* calculate new base currency amount */
             amountPairedCurrency: newAmountPairedCurrency,
           }
         });
@@ -157,9 +151,6 @@ class CurrencyConverter extends React.Component {
           amountBaseOfPair: newAmountBaseOfPair,
         }
       });
-      // calculate new amount for base currency
-      // update state with both new values
-
     }
   }
 
@@ -243,10 +234,10 @@ class CurrencyConverter extends React.Component {
               } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
-          <button type="button" className="btn btn-outline-primary">
+          {/* <button type="button" className="btn btn-outline-primary">
             <span>Switch&nbsp;&nbsp;</span>
             <FontAwesomeIcon icon="fa-solid fa-arrow-right-arrow-left" />
-          </button>
+          </button> */}
         </div>
       </div>
     );
