@@ -5,7 +5,7 @@ class ExchangeRatesTable extends React.Component {
     super(props);
 
     this.state = {
-      allCurrencies: {}, // initially set to array, I checked its lenght in the logic in render, but at that point, it was set to an object => that's why the condition allCurrencies.length > 0 returned false
+      allCurrencies: {},
       baseCurrency: {},
     }
 
@@ -89,6 +89,10 @@ class ExchangeRatesTable extends React.Component {
   render() {
     let { allCurrencies, baseCurrency } = this.state;
 
+    if (allCurrencies.length === 0 || Object.keys(baseCurrency).length === 0) {
+      return <p>Loading...</p>;
+    }
+
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
     for (let key in allCurrencies) {
@@ -97,7 +101,6 @@ class ExchangeRatesTable extends React.Component {
 
     let ratesAmountInput = document.getElementsByClassName('rates-amount-input')[0];
     let top10currencies = ['EUR', 'USD', 'JPY', 'GBP','AUD',  'CAD', 'CHF', 'CNY', 'HKD', 'NZD'];
-
     let allCurrenciesArray = Object.entries(allCurrencies);
 
     return (
@@ -109,23 +112,39 @@ class ExchangeRatesTable extends React.Component {
           {/* Currency input/dropdown 1 */}
           <div className="input-group mb-3">
             {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
-            <input value={ baseCurrency.base } type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
-              </input>
-            <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {/* <FontAwesomeIcon icon={ faCaretDown } /> */}
+            <input 
+              value={ baseCurrency.base } 
+              type="text" 
+              className="form-control" 
+              placeholder="Choose currency" 
+              aria-label="Text input with dropdown button">
+            </input>
+            <button 
+              className="btn btn-outline-secondary dropdown-toggle" type="button" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false">
             </button>
-            <ul onClick={ (e) => this.handleBaseCurrencyChange(e)  } className="dropdown-menu dropdown-menu-end currency-dropdown">
-              {
-                dropdownItemArray.map(item => {
-                  return <li><a href="">{item[0]} {item[1]}</a></li>;
-                })
-              }
+            <ul 
+              onClick={ (e) => this.handleBaseCurrencyChange(e)  } 
+              className="dropdown-menu dropdown-menu-end currency-dropdown">
+                {
+                  dropdownItemArray.map((item, index) => {
+                    return <li key={ index }><a href="">{item[0]} {item[1]}</a></li>;
+                  })
+                }
             </ul>
           </div>
 
           {/* Amount input  */}
           <div className="input-group mb-3 rates-amount-input">
-            <input value={ baseCurrency.amount } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input 
+              value={ baseCurrency.amount } 
+              onChange={ (e) => this.handleAmountChange(e) } 
+              type="text" 
+              className="form-control" 
+              placeholder="Enter amount" 
+              aria-label="Username" 
+              aria-describedby="basic-addon1" />
           </div>
         </div>
         {/* Exchange rates of Top 10 currencies */}
@@ -141,30 +160,26 @@ class ExchangeRatesTable extends React.Component {
             </thead>
             <tbody> 
             {
-                allCurrencies !== undefined && baseCurrency.rates !== undefined
-                ?
-                top10currencies.map(currency => {
-                  if (currency === baseCurrency.base) {
-                    return (
-                      <tr>
-                        <th scope="row">{ currency }</th>
-                        <th scope="row">{ allCurrencies[currency] }</th>
-                        <td className="text-end">{ baseCurrency.amount }</td>
-                      </tr>
-                    )
-                  } else {
-                    return (
-                      <tr>
-                        <th scope="row">{ currency }</th>
-                        <th scope="row">{ allCurrencies[currency] }</th>
-                        <td className="text-end">{ (baseCurrency.rates[currency] * baseCurrency.amount).toFixed(5) }</td>
-                      </tr>
-                    )
-                  }
-                })
-                :
-                'no data received'
-              }
+              top10currencies.map((currency, index) => {
+                if (currency === baseCurrency.base) {
+                  return (
+                    <tr key={ index }>
+                      <th scope="row">{ currency }</th>
+                      <th scope="row">{ allCurrencies[currency] }</th>
+                      <td className="text-end">{ baseCurrency.amount }</td>
+                    </tr>
+                  )
+                } else {
+                  return (
+                    <tr key={ index }>
+                      <th scope="row">{ currency }</th>
+                      <th scope="row">{ allCurrencies[currency] }</th>
+                      <td className="text-end">{ (baseCurrency.rates[currency] * baseCurrency.amount).toFixed(5) }</td>
+                    </tr>
+                  )
+                }
+              })
+            }
             </tbody>
           </table>
         </div>
@@ -180,13 +195,11 @@ class ExchangeRatesTable extends React.Component {
               </tr>
             </thead>
             <tbody className="all-currencies-table">
-           {
-              allCurrencies !== undefined && baseCurrency.rates !== undefined
-              ?
-              allCurrenciesArray.map(currency => {
+            {
+              allCurrenciesArray.map((currency, index) => {
                 if (currency[0] === baseCurrency.base) {
                   return (
-                    <tr>
+                    <tr key={ index }>
                       <th scope="row">{currency[0]}</th>
                       <th scope="row">{allCurrencies[currency[0]]}</th>
                       <td className="text-end">{baseCurrency.amount}</td>
@@ -194,7 +207,7 @@ class ExchangeRatesTable extends React.Component {
                   )
                 } else {
                   return (
-                    <tr>
+                    <tr key={ index }>
                       <th scope="row">{currency[0]}</th>
                       <th scope="row">{allCurrencies[currency[0]]}</th>
                       <td className="text-end">{ (baseCurrency.rates[currency[0]] * baseCurrency.amount).toFixed(5) }</td>
@@ -202,14 +215,11 @@ class ExchangeRatesTable extends React.Component {
                   )
                 }
               })
-              :
-              'no data received'
-            } 
+            }
             </tbody>
           </table>
         </div>
       </div>
-    
     );
   }
 }

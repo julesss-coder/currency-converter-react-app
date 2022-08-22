@@ -53,7 +53,6 @@ class CurrencyConverter extends React.Component {
     });
   }
 
-
   // ********* HANDLE CURRENCY CHANGE *****************
   // On currency change in first dropdown:
     // Change base currency in state in App.js
@@ -159,6 +158,13 @@ class CurrencyConverter extends React.Component {
     let { allCurrencies, baseCurrency, currentPair } = this.state;
     let { base, amount, rates } = baseCurrency;
     let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = currentPair;
+
+    if (allCurrencies.length === 0 
+      || Object.keys(baseCurrency).length === 0 
+      || Object.keys(currentPair).length === 0) {
+      return <p>Loading...</p>;
+    } 
+
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
     for (let key in allCurrencies) {
@@ -181,8 +187,8 @@ class CurrencyConverter extends React.Component {
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
-                dropdownItemArray.map(item => {
-                  return <li><a href="">{item[0]} {item[1]}</a></li>;
+                dropdownItemArray.map((item, index) => {
+                  return <li key={ index }><a href="">{item[0]} {item[1]}</a></li>;
                 })
               }
             </ul>
@@ -201,8 +207,8 @@ class CurrencyConverter extends React.Component {
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
-                dropdownItemArray.map(item => {
-                  return <li><a href="">{item[0]} {item[1]}</a></li>;
+                dropdownItemArray.map((item, index) => {
+                  return <li key={ index }><a href="">{item[0]} {item[1]}</a></li>;
                 })
               }
             </ul>
@@ -213,25 +219,26 @@ class CurrencyConverter extends React.Component {
             A) On initial page load, amountPairedCurrency shows 0, as it is not updated in state until user changes it.
             B) When both currencies are the same, bottom input shows NaN
             SOLUTION: In order to show the correct amount: 
-              If amountPairedCurreny === 0 AND once rates are defined:
+              If amountPairedCurreny === 0:
                 If base currency !== pairedCurrency:
                   Calculate amountPairedCurrency based on rates
                 Else if base currency === pairedCurrency:
                   Show amount of base currency
               Else:
                 Get amountPairedCurrency directly from state */}
-            <input value={ 
-              (rates && amountPairedCurrency === 0) 
-              ? 
-                base !== pairedCurrency 
+            <input 
+              value={ 
+                amountPairedCurrency === 0 
+                ?
+                (base !== pairedCurrency) 
                   ? 
                   rates[pairedCurrency] * amountBaseOfPair
                   :
-                  amountBaseOfPair
-                : 
+                  amountBaseOfPair  
+                :
                 amountPairedCurrency
-              
-              } onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+              }
+              onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           {/* <button type="button" className="btn btn-outline-primary">

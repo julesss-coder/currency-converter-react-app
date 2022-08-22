@@ -22,7 +22,6 @@ class App extends React.Component {
   Source: URL: https://getbootstrap.com/docs/5.0/components/dropdowns/ */
   /* CURRENT SOLUTION: toggleNavbar collapses dropdown upon user clicking navlink, but there is no visual transition. */
   toggleNavbar(e) {
-    console.log('e.target: ', e.target);
     // If dropdown menu is shown, remove class show from div.navbar-collapse
     // There must be a simpler way of handling this, with event bubbling/propagation?
     let navbarDropdown = document.getElementsByClassName('navbar-collapse')[0];

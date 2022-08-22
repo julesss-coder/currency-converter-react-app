@@ -20,7 +20,7 @@ Your project needs to satisfy the following basic requirements:
     You can either use a drop down menu or a list of links to implement the base currency selection feature. It is up to you, but make sure it's intuitive.
 - 2 A currency converter for a pair of currency, where the user can:
   - Edit the amount to be converted. Either allow user to swap the direction of the currency pair, or allow amounts on both sides to be edited. OK
-  - Allow the user to change the currencies being calculated. OK
+    - Allow the user to change the currencies being calculated. OK
   Using a drop down menu or other means you think is intuitive.
 - 3 Has a navigation bar:
   - Site name, can be super generic or super fun. OK
