@@ -1,3 +1,9 @@
+# Currency Converter with Create React App
+
+Try this app on Heroku: https://fast-gorge-33228.herokuapp.com/ 
+
+----------------------------------
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
