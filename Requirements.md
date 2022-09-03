@@ -3,6 +3,36 @@ Add functionality to switch button. // Button commented out for now, as user can
 Style link list in dropdown menu.
 Currency input should show flag- currency short form - currency long form.
 
+- Create historical rates chart for the currency pair currently displayed in currency converter
+On change of this.state.currentPair: //ie. in the beginning of render(), as state update causes re-render.
+  Fetch historic rates for new pair // works!
+
+
+Date from API -> convert to format accepted by library Charts.js
+Dates -> x axis
+Rates -> y axis
+
+Configuring chart.js:
+- labels: dates
+- y axis: rates, but how do I add the to the dataset?
+
+Chart should load on first page load, in componentDidMount
+
+*******Bug: this.state.chartData doesn't update when I set a new state in getHistoricalRates();**********
+REason: State has not been updated when we call getHistoricalRates()
+
+On currency change:
+  Chart needs to be updated as well
+
+IDEA: Make two fetch requests in one query:
+1) Get rates for new currency pair
+2) Get historical rates for new currency pair
+Use: 
+- Promise.all(), URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
+-  try... catch: URL: https://stackoverflow.com/questions/46241827/fetch-api-requesting-multiple-get-requests 
+
+**How do I distinguish the two datasets received when handling them?**
+
 
 ### BUGS
 - When user clicks hamburger menu -> link, the menu does not collapse again automatically.

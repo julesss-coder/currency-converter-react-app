@@ -1,22 +1,30 @@
 import React from 'react';
+import { Chart, registerables } from 'chart.js';
+import CurrencyChart from './CurrencyChart';
+Chart.register(...registerables);
+
 
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
     
     this.state = {
-      allCurrencies: [],
+      allCurrencies: [], // shouldn't this be an object?
       baseCurrency: {},
       currentPair: {
         baseOfPair: 'EUR',
         amountBaseOfPair: 1,
         pairedCurrency: 'USD',
         amountPairedCurrency: 0, 
-      }
-    }
+      },
+      chartData: {},
+    };
+
+    
 
     this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
     this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.getHistoricalRates = this.getHistoricalRates.bind(this);
   }
 
  
@@ -60,35 +68,46 @@ class CurrencyConverter extends React.Component {
 
   handleCurrencyChange(e) {
     e.preventDefault();
-    
+    let { baseOfPair, pairedCurrency } = this.state.currentPair;
     // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
 
     // If user changes currency in top input field:
     if (e.target.closest('ul').classList.contains('currency-picker-1')) {
-      // get data for new base currency
-      fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-  
-        throw new Error('Request was either a 404 or 500');
-      }).then(data => {
-        // Using a callback function and rest operator to partially update state
-        this.setState(() => ({
-          baseCurrency: data,
-          currentPair: {
-            ...this.state.currentPair,
-            baseOfPair: newCurrency,
-          }
-        }));
-      }).catch(error => {
+
+      let currentRates = fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`);
+
+      let historicalRates = fetch(`https://altexchangerateapi.herokuapp.com/2022-08-22..2022-08-26?from=${newCurrency}&to=${pairedCurrency}`);
+
+      Promise.all([currentRates, historicalRates])
+      .then(files => {
+
+        // add current rates of new currency pair to state
+        files[0].json().then(data => {
+          console.log('current rates: ', data);
+          // Using a callback function and rest operator to partially update state
+          this.setState(() => ({
+            baseCurrency: data,
+            currentPair: {
+              ...this.state.currentPair,
+              baseOfPair: newCurrency,
+            }
+          }));
+        });
+
+        // add historical rates for new currency pair to state
+        files[1].json().then(data => {
+          console.log('historical rates: ', data);
+          this.setState({
+            chartData: data,
+          });
+        });
+      })
+      .catch(error => {
         console.log(error);
         // deal with error
       });
-
-
+        
     // Else if user changes currency in bottom input field:
       // DO NOT change base currency in state in App.js - the base currency is unchanged
       // Change currentPair.pairedCurrency in state in CurrencyConverter
@@ -100,6 +119,7 @@ class CurrencyConverter extends React.Component {
           pairedCurrency: newCurrency,
         }
       }));
+      console.log('state: ', this.state);
     }
   } 
 
@@ -154,6 +174,35 @@ class CurrencyConverter extends React.Component {
   }
 
 
+  //******** GET HISTORICAL RATES********** */
+  getHistoricalRates() {
+    console.log('getHistoricalRates runs');
+    console.log('state in getHistoricalRates: ', this.state);
+    let { baseOfPair, pairedCurrency } = this.state.currentPair;
+
+    fetch(`https://altexchangerateapi.herokuapp.com/2022-08-22..2022-08-26?from=${baseOfPair}&to=${pairedCurrency}`)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+
+      throw new Error('Request was either a 404 pr 505');
+    }).then(data => {
+      // deal with data
+      console.log(data);
+      console.log('dates: ', Object.keys(data.rates));
+      console.log('rates: ', Object.values(data.rates));
+      this.setState({
+        chartData: 'test',
+      });
+      console.log('state after setting this.state.chartData: ', this.state);
+    }).catch(error => {
+      console.log(error);
+      // deal with error
+    });
+  }
+
+
   render() {
     let { allCurrencies, baseCurrency, currentPair } = this.state;
     let { base, amount, rates } = baseCurrency;
@@ -165,11 +214,14 @@ class CurrencyConverter extends React.Component {
       return <p>Loading...</p>;
     } 
 
+    console.log('state in render:', this.state);
+
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
     for (let key in allCurrencies) {
       dropdownItemArray.push([key, allCurrencies[key]]);
     }
+
  
     // Why can I access `amount` and `base` in return statement, but not `rates`? 
     return (
@@ -245,6 +297,7 @@ class CurrencyConverter extends React.Component {
             <span>Switch&nbsp;&nbsp;</span>
             <FontAwesomeIcon icon="fa-solid fa-arrow-right-arrow-left" />
           </button> */}
+          < CurrencyChart />
         </div>
       </div>
     );
