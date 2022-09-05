@@ -66,6 +66,7 @@ class CurrencyConverter extends React.Component {
     // Change base currency in state in App.js
     // Change baseOfPair in currentPair in state in CurrencyConverter
 
+    //
   handleCurrencyChange(e) {
     e.preventDefault();
     let { baseOfPair, pairedCurrency } = this.state.currentPair;
@@ -108,6 +109,7 @@ class CurrencyConverter extends React.Component {
         // deal with error
       });
         
+    // ***NOT YET UPDATED TO GET HISTORICAL RATES***
     // Else if user changes currency in bottom input field:
       // DO NOT change base currency in state in App.js - the base currency is unchanged
       // Change currentPair.pairedCurrency in state in CurrencyConverter

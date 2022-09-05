@@ -31,6 +31,8 @@ Use:
 - Promise.all(), URL: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all
 -  try... catch: URL: https://stackoverflow.com/questions/46241827/fetch-api-requesting-multiple-get-requests 
 
+https://www.youtube.com/watch?v=HTA7pEDGZEU
+
 **How do I distinguish the two datasets received when handling them?**
 
 
