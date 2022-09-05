@@ -1,4 +1,5 @@
 import React from 'react';
+import Chart from 'chart.js/auto';
 
 class CurrencyConverter extends React.Component {
   constructor(props) {
@@ -15,8 +16,12 @@ class CurrencyConverter extends React.Component {
       }
     }
 
+    this.chartRef = React.createRef();
+
     this.handleCurrencyChange = this.handleCurrencyChange.bind(this);
     this.handleAmountChange = this.handleAmountChange.bind(this);
+    this.getHistoricalRates = this.getHistoricalRates.bind(this);
+    this.buildChart = this.buildChart.bind(this);
   }
 
  
@@ -34,14 +39,14 @@ class CurrencyConverter extends React.Component {
       console.log(error);
       // deal with error
     });
-
+    
     // Get exchange rate for default base currency EUR and add them to state
     fetch('https://api.frankfurter.app/latest')
     .then(response => {
       if (response.ok) {
         return response.json();
       }
-
+      
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
       this.setState({
@@ -51,6 +56,13 @@ class CurrencyConverter extends React.Component {
       console.log(error);
       // deal with error
     });
+    
+    let { baseOfPair, pairedCurrency } = this.state.currentPair;
+    if (baseOfPair !== pairedCurrency) {
+      this.getHistoricalRates(baseOfPair, pairedCurrency);
+    } else {
+      this.chart.destroy();
+    }
   }
 
   // ********* HANDLE CURRENCY CHANGE *****************
@@ -83,6 +95,12 @@ class CurrencyConverter extends React.Component {
             baseOfPair: newCurrency,
           }
         }));
+        
+        if (newCurrency !== this.state.currentPair.pairedCurrency) {
+          this.getHistoricalRates(newCurrency, this.state.currentPair.pairedCurrency);
+        } else {
+          this.chart.destroy();
+        }
       }).catch(error => {
         console.log(error);
         // deal with error
@@ -100,6 +118,12 @@ class CurrencyConverter extends React.Component {
           pairedCurrency: newCurrency,
         }
       }));
+
+      if (this.state.currentPair.baseOfPair !== newCurrency) {
+        this.getHistoricalRates(this.state.currentPair.baseOfPair, newCurrency);
+      } else {
+        this.chart.destroy();
+      }
     }
   } 
 
@@ -151,6 +175,60 @@ class CurrencyConverter extends React.Component {
         }
       });
     }
+  }
+
+
+  // ******* GET HISTORICAL RATES***********
+  getHistoricalRates(baseOfPair, pairedCurrency) {
+    fetch(`https://altexchangerateapi.herokuapp.com/1999-01-04..?from=${baseOfPair}&to=${pairedCurrency}`)
+    .then(response => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error('Request was either a 404 or 500');
+    }).then(data => {
+      console.log('historical rates: ', data);
+      let chartLabels = Object.keys(data.rates);
+      let chartData = Object.values(data.rates).map(rate => {
+        return rate[pairedCurrency];
+      });
+      /*
+      for each value in data.rates:
+        get the value of the key [pairedCurrency]
+      */
+      console.log('chartLabels: ', chartLabels);
+      console.log('chartData: ', chartData);
+      let chartLabel = `${baseOfPair}/${pairedCurrency}`;
+      this.buildChart(chartLabels, chartData, chartLabel);
+    }).catch(error => {
+      console.log(error);
+    });
+
+  }
+
+  buildChart(labels, data, label) {
+    const chartRef = this.chartRef.current.getContext("2d");
+    if (typeof this.chart !== "undefined") {
+      this.chart.destroy();
+    }
+
+    this.chart = new Chart(this.chartRef.current.getContext("2d"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: label,
+            data,
+            fill: false,
+            tension: 0,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+      }
+    })
   }
 
 
@@ -245,6 +323,9 @@ class CurrencyConverter extends React.Component {
             <span>Switch&nbsp;&nbsp;</span>
             <FontAwesomeIcon icon="fa-solid fa-arrow-right-arrow-left" />
           </button> */}
+        </div>
+        <div className="col-12">
+          <canvas ref={ this.chartRef }></canvas>
         </div>
       </div>
     );
