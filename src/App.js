@@ -17,41 +17,16 @@ class App extends React.Component {
     this.toggleNavbar = this.toggleNavbar.bind(this);
   }
 
-  /* Bootstrap 5's navbar hamburger menu doesn't collapse on click, so I wrote this event handler to make it work. */
-  /* UPDATE 9 AUG 2022: Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js. It expands the dropdown upon click on hamburger menu, but it doesn't collapse it again...
+  /* Bootstrap's dropdowns work with third party library popper.js, which is included in bootstrap.bundle.min.js - imported in index.js. It expands the dropdown upon click on hamburger menu, but it doesn't collapse it again.
   Source: URL: https://getbootstrap.com/docs/5.0/components/dropdowns/ */
   /* CURRENT SOLUTION: toggleNavbar collapses dropdown upon user clicking navlink, but there is no visual transition. */
   toggleNavbar(e) {
-    // If dropdown menu is shown, remove class show from div.navbar-collapse
-    // There must be a simpler way of handling this, with event bubbling/propagation?
     let navbarDropdown = document.getElementsByClassName('navbar-collapse')[0];
-    // If dropdown menu is expanded and user clicks link .nav-link:
-      // Collapse dropdown again
     if (navbarDropdown.classList.contains('show')) {
       if (e.target.classList.contains('nav-link')) {
         document.getElementsByClassName('navbar-collapse')[0].classList.remove('show');
       }
     }
-
-    // // If dropdown menu is hidden:
-    // if (navbarDropdown.classList.contains('collapse')) {
-    //   if (e.target.className === 'navbar-toggler' || e.target.className === 'navbar-toggler-icon') {
-    //     console.log('navbar toggler/icon clicked');
-    //     // Show dropdown menu
-    //     document.getElementsByClassName('navbar-collapse')[0].classList.remove('collapse');
-    //   }
-    // }
-    // // else if dropdown menu is visible
-    // else {
-    //   // if user clicks somewhere on dropdown menu, or navbar toggler
-    //   if (e.target.classList.contains('nav-link')
-    //   || e.target.classList.contains('navbar-toggler')
-    //   || e.target.classList.contains('navbar-toggler-icon')
-    //   ) {
-    //     // Hide drop down menu
-    //     document.getElementsByClassName('navbar-collapse')[0].classList.add('collapse');
-    //   }
-    // }
   }
 
   render() {

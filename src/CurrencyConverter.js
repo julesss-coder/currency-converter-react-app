@@ -37,7 +37,6 @@ class CurrencyConverter extends React.Component {
       this.setState({allCurrencies: data});
     }).catch(error => {
       console.log(error);
-      // deal with error
     });
     
     // Get exchange rate for default base currency EUR and add them to state
@@ -54,7 +53,6 @@ class CurrencyConverter extends React.Component {
       });
     }).catch(error => {
       console.log(error);
-      // deal with error
     });
     
     let { baseOfPair, pairedCurrency } = this.state.currentPair;
@@ -66,19 +64,12 @@ class CurrencyConverter extends React.Component {
   }
 
   // ********* HANDLE CURRENCY CHANGE *****************
-  // On currency change in first dropdown:
-    // Change base currency in state in App.js
-    // Change baseOfPair in currentPair in state in CurrencyConverter
-
   handleCurrencyChange(e) {
     e.preventDefault();
-    
-    // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
 
     // If user changes currency in top input field:
     if (e.target.closest('ul').classList.contains('currency-picker-1')) {
-      // get data for new base currency
       fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
       .then(response => {
         if (response.ok) {
@@ -87,7 +78,6 @@ class CurrencyConverter extends React.Component {
   
         throw new Error('Request was either a 404 or 500');
       }).then(data => {
-        // Using a callback function and rest operator to partially update state
         this.setState(() => ({
           baseCurrency: data,
           currentPair: {
@@ -103,14 +93,10 @@ class CurrencyConverter extends React.Component {
         }
       }).catch(error => {
         console.log(error);
-        // deal with error
       });
 
 
     // Else if user changes currency in bottom input field:
-      // DO NOT change base currency in state in App.js - the base currency is unchanged
-      // Change currentPair.pairedCurrency in state in CurrencyConverter
-      // NO NEED to fetch anything from API
     } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
       this.setState(() => ({
         currentPair: {
@@ -138,9 +124,6 @@ class CurrencyConverter extends React.Component {
     let newAmount = +e.target.value;
     
     // On amount change in first input field:
-      // Calculate correct amount for paired currency
-      // Update local state in CurrencyConverter
-      // Render in second input field (controlled component)
       if (e.target.classList.contains('amount-input-1')) {
         let newAmountPairedCurrency = newAmount * rates[pairedCurrency];
         this.setState({
@@ -152,19 +135,7 @@ class CurrencyConverter extends React.Component {
         });
         
     // On amount change in second input field:
-      // Get new amount
-      // Calculate amount of base currency
-      // Update local state in Currency Converter
-      // Render in first input field (controlled component)
     } else if (e.target.classList.contains('amount-input-2')) {
-      // new amount -> amountPairedCurrency
-      // *** Use library money.js to calculate new amounts ***
-      // amountPairedCurrency is 0 => Infinity
-      // I need the previous amount if pairedCurrency (not 0)
-      // Should be in state
-      // E.g. 5 USD = x EUR?
-      // (1 EUR / 1.0178 (EUR to USD rate)) * 5
-      // => newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
       let newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
 
       this.setState({
@@ -180,25 +151,24 @@ class CurrencyConverter extends React.Component {
 
   // ******* GET HISTORICAL RATES***********
   getHistoricalRates(baseOfPair, pairedCurrency) {
-    fetch(`https://altexchangerateapi.herokuapp.com/1999-01-04..?from=${baseOfPair}&to=${pairedCurrency}`)
+    let startDate = new Date();
+    let year = startDate.getFullYear();
+    startDate = `${year - 1}${startDate.toISOString().slice(4, 10)}`;
+
+    // Get rates for the past year
+    fetch(`https://altexchangerateapi.herokuapp.com/${startDate}..?from=${baseOfPair}&to=${pairedCurrency}`)
     .then(response => {
       if (response.ok) {
         return response.json();
       }
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      console.log('historical rates: ', data);
       let chartLabels = Object.keys(data.rates);
       let chartData = Object.values(data.rates).map(rate => {
         return rate[pairedCurrency];
       });
-      /*
-      for each value in data.rates:
-        get the value of the key [pairedCurrency]
-      */
-      console.log('chartLabels: ', chartLabels);
-      console.log('chartData: ', chartData);
-      let chartLabel = `${baseOfPair}/${pairedCurrency}`;
+      
+      let chartLabel = `${baseOfPair}/${pairedCurrency} rates for the past year`;
       this.buildChart(chartLabels, chartData, chartLabel);
     }).catch(error => {
       console.log(error);
@@ -228,7 +198,7 @@ class CurrencyConverter extends React.Component {
       options: {
         responsive: true,
       }
-    })
+    });
   }
 
 
@@ -249,19 +219,15 @@ class CurrencyConverter extends React.Component {
       dropdownItemArray.push([key, allCurrencies[key]]);
     }
  
-    // Why can I access `amount` and `base` in return statement, but not `rates`? 
     return (
       <div className="row mt-3">
         <h2 className="mb-3">Currency Converter</h2>
         <div className="col-12 col-lg-6">
-          {/* Add currently picked currency to headline, like so: US Dollar Currency Converter */}
           {/* Currency input/dropdown 1 */}
           <div className="input-group mb-3">
-            {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
             <input value={baseOfPair} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
               </input>
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {/* <FontAwesomeIcon icon={faCaretDown } /> */}
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
@@ -281,7 +247,6 @@ class CurrencyConverter extends React.Component {
           <div className="input-group mb-3">
             <input value={pairedCurrency} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button" />
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {/* <FontAwesomeIcon icon={ faCaretDown } /> */}
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {

@@ -43,16 +43,13 @@ class ExchangeRatesTable extends React.Component {
       });
     }).catch(error => {
       console.log(error);
-      // deal with error
     });
   }
 
   handleBaseCurrencyChange(e) {
     e.preventDefault();
-    // Get the currency the user clicked on:
     let newCurrency = e.target.text.substring(0,3);
 
-    // get data for new base currency
     fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
     .then(response => {
       if (response.ok) {
@@ -61,13 +58,11 @@ class ExchangeRatesTable extends React.Component {
 
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
-      // Using a callback function and rest operator to partially update state
       this.setState(() => ({
         baseCurrency: data,
       }));
     }).catch(error => {
       console.log(error);
-      // deal with error
     });
   }
 
@@ -106,12 +101,10 @@ class ExchangeRatesTable extends React.Component {
     return (
       <div className="row mt-3">
         <div className="col-12 col-lg-5">
-          {/* Add currently picked currency to headline, like so: US Dollar Exchange Rates Table */}
           <h2>Exchange Rates Table</h2>
     
           {/* Currency input/dropdown 1 */}
           <div className="input-group mb-3">
-            {/* Flag, abbreviation and name of chosen currency displayed here. Inject. */}
             <input 
               value={ baseCurrency.base } 
               type="text" 
