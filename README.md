@@ -1,5 +1,6 @@
 # Currency Converter with Create React App
 
+Try this app on Netlify: https://harmonious-bunny-547cf2.netlify.app/ 
 Try this app on Heroku: https://fast-gorge-33228.herokuapp.com/ 
 
 ----------------------------------
