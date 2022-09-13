@@ -169,7 +169,10 @@ class CurrencyConverter extends React.Component {
       });
       
       let chartLabel = `${baseOfPair}/${pairedCurrency} rates for the past year`;
-      this.buildChart(chartLabels, chartData, chartLabel);
+      console.log("this.chartRef.current: ", this.chartRef.current);
+      if (this.chartRef.current) {
+        this.buildChart(chartLabels, chartData, chartLabel);
+      }
     }).catch(error => {
       console.log(error);
     });
@@ -181,26 +184,24 @@ class CurrencyConverter extends React.Component {
     if (typeof this.chart !== "undefined") {
       this.chart.destroy();
     }
-    // Only create new chart if this.chartRef.current is not undefined/null
-    if (this.chartRef.current) {
-      this.chart = new Chart(this.chartRef.current.getContext("2d"), {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            {
-              label: label,
-              data,
-              fill: false,
-              tension: 0,
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-        }
-      });
-    }
+
+    this.chart = new Chart(this.chartRef.current.getContext("2d"), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: label,
+            data,
+            fill: false,
+            tension: 0,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+      }
+    });
   }
 
 
