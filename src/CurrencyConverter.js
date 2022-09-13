@@ -181,24 +181,26 @@ class CurrencyConverter extends React.Component {
     if (typeof this.chart !== "undefined") {
       this.chart.destroy();
     }
-
-    this.chart = new Chart(this.chartRef.current.getContext("2d"), {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [
-          {
-            label: label,
-            data,
-            fill: false,
-            tension: 0,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-      }
-    });
+    // Only create new chart if this.chartRef.current is not undefined/null
+    if (this.chartRef.current) {
+      this.chart = new Chart(this.chartRef.current.getContext("2d"), {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: label,
+              data,
+              fill: false,
+              tension: 0,
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+        }
+      });
+    }
   }
 
 
