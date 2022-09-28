@@ -56,11 +56,8 @@ class CurrencyConverter extends React.Component {
     });
     
     let { baseOfPair, pairedCurrency } = this.state.currentPair;
-    if (baseOfPair !== pairedCurrency) {
-      this.getHistoricalRates(baseOfPair, pairedCurrency);
-    } else {
-      this.chart.destroy();
-    }
+
+    this.getHistoricalRates(baseOfPair, pairedCurrency);
   }
 
   // ********* HANDLE CURRENCY CHANGE *****************
@@ -163,16 +160,19 @@ class CurrencyConverter extends React.Component {
       }
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
+      if (data.error) {
+        console.log(data.error);
+        throw new Error(data.error);
+      }
+
       let chartLabels = Object.keys(data.rates);
       let chartData = Object.values(data.rates).map(rate => {
         return rate[pairedCurrency];
       });
       
       let chartLabel = `${baseOfPair}/${pairedCurrency} rates for the past year`;
-      console.log("this.chartRef.current: ", this.chartRef.current);
-      if (this.chartRef.current) {
-        this.buildChart(chartLabels, chartData, chartLabel);
-      }
+
+      this.buildChart(chartLabels, chartData, chartLabel);
     }).catch(error => {
       console.log(error);
     });
@@ -180,7 +180,10 @@ class CurrencyConverter extends React.Component {
   }
 
   buildChart(labels, data, label) {
+    // BUG: Historical chart does not always load upon first page load, because this.chartRef.current === null.
+    // Removed check for this.chartRef.current in getHistoricalRates(), it seems to work now, but I don't understand why.
     const chartRef = this.chartRef.current.getContext("2d");
+
     if (typeof this.chart !== "undefined") {
       this.chart.destroy();
     }

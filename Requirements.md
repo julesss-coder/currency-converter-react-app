@@ -8,6 +8,7 @@ Currency input should show flag- currency short form - currency long form.
 - When user clicks hamburger menu -> link, the menu does not collapse again automatically.
   - CURRENT SOLUTION: I wrote a method (toggleNavBar) that collapses dropdown upon user clicking navlink, but there is no visual transition.
 - Currency Converter Navlink does not show as active upon load.
+- Historical chart does not always load on first page load. See Netlify app: https://aesthetic-crostata-36e2b3.netlify.app/
 
 
 # REQUIREMENTS	Currency Converter - Create React App
