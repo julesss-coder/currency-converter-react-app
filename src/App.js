@@ -31,7 +31,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <Router>
+      <Router basename="/first-react-app">
         {/* Bootstrap 5 container */}
         <div className="container">
           {/* Navigation Bar */}
