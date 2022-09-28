@@ -66,6 +66,8 @@ Component hierarchy:
 
 - handleCurrencyChange in CC component only works when I run e.preventDefault(e). why?
 
+- Does componentDidMount only get called when page is first loading? If so, I do not need to check if baseOfPair !== pairedCurrency, as they are set to EUR and USD initially.
+
 
 ### ANSWERED QUESTIONS:
 - Q: How to setState for only one (sub)property of this.state, without copying all the parts of state that stay the same?
