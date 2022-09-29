@@ -35,6 +35,8 @@ class CurrencyConverter extends React.Component {
       throw new Error('Request was either a 404 or 500');
     }).then(data => {
       this.setState({allCurrencies: data});
+      console.log('componentDidMount: fetch request for allCurrencies comes back');
+      this.getHistoricalRates(baseOfPair, pairedCurrency);
     }).catch(error => {
       console.log(error);
     });
@@ -51,13 +53,13 @@ class CurrencyConverter extends React.Component {
       this.setState({
         baseCurrency: data,
       });
+      console.log('componentDidMount: fetch request for base currency EUR comes back');
     }).catch(error => {
       console.log(error);
     });
     
     let { baseOfPair, pairedCurrency } = this.state.currentPair;
 
-    this.getHistoricalRates(baseOfPair, pairedCurrency);
   }
 
   // ********* HANDLE CURRENCY CHANGE *****************
@@ -165,6 +167,7 @@ class CurrencyConverter extends React.Component {
         throw new Error(data.error);
       }
 
+      console.log('getHistoricalRates: fetch request comes back');
       let chartLabels = Object.keys(data.rates);
       let chartData = Object.values(data.rates).map(rate => {
         return rate[pairedCurrency];
@@ -216,8 +219,11 @@ class CurrencyConverter extends React.Component {
     if (allCurrencies.length === 0 
       || Object.keys(baseCurrency).length === 0 
       || Object.keys(currentPair).length === 0) {
+      console.log('render runs, some data missing');
       return <p>Loading...</p>;
     } 
+
+    console.log('Render runs, all data available');
 
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
