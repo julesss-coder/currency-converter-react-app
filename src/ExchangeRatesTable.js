@@ -15,7 +15,7 @@ class ExchangeRatesTable extends React.Component {
 
   componentDidMount() {
     // Get list of all available currencies and add them to state
-    fetch('https://altexchangerateapi.herokuapp.com/currencies')
+    fetch(' https://api.frankfurter.app/currencies')
     .then(response => {
       if (response.ok) {
         return response.json();

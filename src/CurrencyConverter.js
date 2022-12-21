@@ -27,7 +27,7 @@ class CurrencyConverter extends React.Component {
  
   componentDidMount() {
     // Get list of all available currencies and add them to state
-    fetch('https://altexchangerateapi.herokuapp.com/currencies')
+    fetch('https://api.frankfurter.app/currencies')
     .then(response => {
       if (response.ok) {
         return response.json();
@@ -155,7 +155,7 @@ class CurrencyConverter extends React.Component {
     startDate = `${year - 1}${startDate.toISOString().slice(4, 10)}`;
 
     // Get rates for the past year
-    fetch(`https://altexchangerateapi.herokuapp.com/${startDate}..?from=${baseOfPair}&to=${pairedCurrency}`)
+    fetch(` https://api.frankfurter.app/${startDate}..?from=${baseOfPair}&to=${pairedCurrency}`)
     .then(response => {
       if (response.ok) {
         return response.json();

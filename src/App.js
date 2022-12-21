@@ -5,7 +5,6 @@ import './App.css';
 /* Fontawesome */
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-
 // pages
 import CurrencyConverter from './CurrencyConverter';
 import ExchangeRatesTable from './ExchangeRatesTable';
