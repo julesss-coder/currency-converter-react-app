@@ -4,7 +4,7 @@ import Chart from 'chart.js/auto';
 class CurrencyConverter extends React.Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       allCurrencies: [],
       baseCurrency: {},
@@ -12,7 +12,7 @@ class CurrencyConverter extends React.Component {
         baseOfPair: 'EUR',
         amountBaseOfPair: 1,
         pairedCurrency: 'USD',
-        amountPairedCurrency: 0, 
+        amountPairedCurrency: 0,
       }
     }
 
@@ -24,38 +24,38 @@ class CurrencyConverter extends React.Component {
     this.buildChart = this.buildChart.bind(this);
   }
 
- 
+
   componentDidMount() {
     // Get list of all available currencies and add them to state
     fetch('https://api.frankfurter.app/currencies')
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      this.setState({allCurrencies: data});
-      this.getHistoricalRates(baseOfPair, pairedCurrency);
-    }).catch(error => {
-      console.log(error);
-    });
-    
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        this.setState({ allCurrencies: data });
+        this.getHistoricalRates(baseOfPair, pairedCurrency);
+      }).catch(error => {
+        console.log(error);
+      });
+
     // Get exchange rate for default base currency EUR and add them to state
     fetch('https://api.frankfurter.app/latest')
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      this.setState({
-        baseCurrency: data,
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        this.setState({
+          baseCurrency: data,
+        });
+      }).catch(error => {
+        console.log(error);
       });
-    }).catch(error => {
-      console.log(error);
-    });
-    
+
     let { baseOfPair, pairedCurrency } = this.state.currentPair;
 
   }
@@ -63,37 +63,37 @@ class CurrencyConverter extends React.Component {
   // ********* HANDLE CURRENCY CHANGE *****************
   handleCurrencyChange(e) {
     e.preventDefault();
-    let newCurrency = e.target.text.substring(0,3);
+    let newCurrency = e.target.textContent.substring(0, 3);
 
     // If user changes currency in top input field:
     if (e.target.closest('ul').classList.contains('currency-picker-1')) {
       fetch(`https://api.frankfurter.app/latest?from=${newCurrency}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-  
-        throw new Error('Request was either a 404 or 500');
-      }).then(data => {
-        this.setState(() => ({
-          baseCurrency: data,
-          currentPair: {
-            ...this.state.currentPair,
-            baseOfPair: newCurrency,
+        .then(response => {
+          if (response.ok) {
+            return response.json();
           }
-        }));
-        
-        if (newCurrency !== this.state.currentPair.pairedCurrency) {
-          this.getHistoricalRates(newCurrency, this.state.currentPair.pairedCurrency);
-        } else {
-          this.chart.destroy();
-        }
-      }).catch(error => {
-        console.log(error);
-      });
+
+          throw new Error('Request was either a 404 or 500');
+        }).then(data => {
+          this.setState(() => ({
+            baseCurrency: data,
+            currentPair: {
+              ...this.state.currentPair,
+              baseOfPair: newCurrency,
+            }
+          }));
+
+          if (newCurrency !== this.state.currentPair.pairedCurrency) {
+            this.getHistoricalRates(newCurrency, this.state.currentPair.pairedCurrency);
+          } else {
+            this.chart.destroy();
+          }
+        }).catch(error => {
+          console.log(error);
+        });
 
 
-    // Else if user changes currency in bottom input field:
+      // Else if user changes currency in bottom input field:
     } else if (e.target.closest('ul').classList.contains('currency-picker-2')) {
       this.setState(() => ({
         currentPair: {
@@ -108,7 +108,7 @@ class CurrencyConverter extends React.Component {
         this.chart.destroy();
       }
     }
-  } 
+  }
 
   // ********** HANDLE AMOUNT CHANGE *************
   handleAmountChange(e) {
@@ -119,19 +119,19 @@ class CurrencyConverter extends React.Component {
       return;
     }
     let newAmount = +e.target.value;
-    
+
     // On amount change in first input field:
-      if (e.target.classList.contains('amount-input-1')) {
-        let newAmountPairedCurrency = newAmount * rates[pairedCurrency];
-        this.setState({
-          currentPair: {
-            ...this.state.currentPair,
-            amountBaseOfPair: newAmount,
-            amountPairedCurrency: newAmountPairedCurrency,
-          }
-        });
-        
-    // On amount change in second input field:
+    if (e.target.classList.contains('amount-input-1')) {
+      let newAmountPairedCurrency = newAmount * rates[pairedCurrency];
+      this.setState({
+        currentPair: {
+          ...this.state.currentPair,
+          amountBaseOfPair: newAmount,
+          amountPairedCurrency: newAmountPairedCurrency,
+        }
+      });
+
+      // On amount change in second input field:
     } else if (e.target.classList.contains('amount-input-2')) {
       let newAmountBaseOfPair = (1 / rates[pairedCurrency]) * newAmount;
 
@@ -154,28 +154,28 @@ class CurrencyConverter extends React.Component {
 
     // Get rates for the past year
     fetch(` https://api.frankfurter.app/${startDate}..?from=${baseOfPair}&to=${pairedCurrency}`)
-    .then(response => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error('Request was either a 404 or 500');
-    }).then(data => {
-      if (data.error) {
-        console.log(data.error);
-        throw new Error(data.error);
-      }
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error('Request was either a 404 or 500');
+      }).then(data => {
+        if (data.error) {
+          console.log(data.error);
+          throw new Error(data.error);
+        }
 
-      let chartLabels = Object.keys(data.rates);
-      let chartData = Object.values(data.rates).map(rate => {
-        return rate[pairedCurrency];
+        let chartLabels = Object.keys(data.rates);
+        let chartData = Object.values(data.rates).map(rate => {
+          return rate[pairedCurrency];
+        });
+
+        let chartLabel = `${baseOfPair}/${pairedCurrency} rates for the past year`;
+
+        this.buildChart(chartLabels, chartData, chartLabel);
+      }).catch(error => {
+        console.log(error);
       });
-      
-      let chartLabel = `${baseOfPair}/${pairedCurrency} rates for the past year`;
-
-      this.buildChart(chartLabels, chartData, chartLabel);
-    }).catch(error => {
-      console.log(error);
-    });
 
   }
 
@@ -213,18 +213,18 @@ class CurrencyConverter extends React.Component {
     let { base, amount, rates } = baseCurrency;
     let { baseOfPair, amountBaseOfPair, pairedCurrency, amountPairedCurrency } = currentPair;
 
-    if (allCurrencies.length === 0 
-      || Object.keys(baseCurrency).length === 0 
+    if (allCurrencies.length === 0
+      || Object.keys(baseCurrency).length === 0
       || Object.keys(currentPair).length === 0) {
       return <p>Loading...</p>;
-    } 
+    }
 
     // Create an array of dropdown items (one item per currency)
     let dropdownItemArray = [];
     for (let key in allCurrencies) {
       dropdownItemArray.push([key, allCurrencies[key]]);
     }
- 
+
     return (
       <div className="row mt-3">
         <h2 className="mb-3">Currency Converter</h2>
@@ -232,20 +232,20 @@ class CurrencyConverter extends React.Component {
           {/* Currency input/dropdown 1 */}
           <div className="input-group mb-3">
             <input value={baseOfPair} type="text" className="form-control" placeholder="Choose currency" aria-label="Text input with dropdown button">
-              </input>
+            </input>
             <button className="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             </button>
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-1">
               {
                 dropdownItemArray.map((item, index) => {
-                  return <li key={ index }><a href="">{item[0]} {item[1]}</a></li>;
+                  return <li key={index}><a href="">{item[0]} {item[1]}</a></li>;
                 })
               }
             </ul>
           </div>
           {/* Amount input 1 */}
           <div className="input-group mb-3">
-            <input value={ amountBaseOfPair} onChange={ (e) => this.handleAmountChange(e) }  type="text" className="form-control amount-input-1" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+            <input value={amountBaseOfPair} onChange={(e) => this.handleAmountChange(e)} type="text" className="form-control amount-input-1" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
         </div>
         <div className="col-12 col-lg-6">
@@ -257,7 +257,7 @@ class CurrencyConverter extends React.Component {
             <ul onClick={(e) => this.handleCurrencyChange(e)} className="dropdown-menu dropdown-menu-end currency-dropdown currency-picker-2">
               {
                 dropdownItemArray.map((item, index) => {
-                  return <li key={ index }><a href="">{item[0]} {item[1]}</a></li>;
+                  return <li key={index}><a href="">{item[0]} {item[1]}</a></li>;
                 })
               }
             </ul>
@@ -275,19 +275,19 @@ class CurrencyConverter extends React.Component {
                   Show amount of base currency
               Else:
                 Get amountPairedCurrency directly from state */}
-            <input 
-              value={ 
-                amountPairedCurrency === 0 
-                ?
-                (base !== pairedCurrency) 
-                  ? 
-                  rates[pairedCurrency] * amountBaseOfPair
+            <input
+              value={
+                amountPairedCurrency === 0
+                  ?
+                  (base !== pairedCurrency)
+                    ?
+                    rates[pairedCurrency] * amountBaseOfPair
+                    :
+                    amountBaseOfPair
                   :
-                  amountBaseOfPair  
-                :
-                amountPairedCurrency
+                  amountPairedCurrency
               }
-              onChange={ (e) => this.handleAmountChange(e) } type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
+              onChange={(e) => this.handleAmountChange(e)} type="text" className="form-control amount-input-2" placeholder="Enter amount" aria-label="Username" aria-describedby="basic-addon1" />
           </div>
           {/* Switch button */}
           {/* <button type="button" className="btn btn-outline-primary">
@@ -296,7 +296,7 @@ class CurrencyConverter extends React.Component {
           </button> */}
         </div>
         <div className="col-12">
-          <canvas ref={ this.chartRef }></canvas>
+          <canvas ref={this.chartRef}></canvas>
         </div>
       </div>
     );
