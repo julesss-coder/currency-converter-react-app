@@ -1,6 +1,6 @@
 # Currency Converter with Create React App
 
-Try this app on Netlify: https://zippy-jalebi-b833a9.netlify.app 
+Try this app on Netlify: https://659eecf539a17f19ec3be9b1--fabulous-sprite-c5bc96.netlify.app/
 
 ----------------------------------
 
